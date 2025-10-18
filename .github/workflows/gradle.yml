@@ -26,11 +26,6 @@ jobs:
       run: |
         chmod +x gradlew          # gradlew in y2025
         git config --global --add safe.directory $GITHUB_WORKSPACE/y2025
-        
-    #clean cache
-    - name: Clean-SpotlessApply
-      run: |
-        ./gradlew spotlessApply
       
     # compile
     - name: Compile and Test
