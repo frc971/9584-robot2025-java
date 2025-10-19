@@ -16,7 +16,7 @@ public class Intake {
     private final DigitalInput coralBeamBreak = new DigitalInput(Constants.Intake.CORAL_BEAM_BREAK_CHANNEL);
 
     public Intake(NetworkTablesWrapper networkTables, SwerveRequests.RobotCentric robotCentricDrive) {
-        this.networkTables = networkTabl
+        this.networkTables = networkTables;
         this.robotCentricDrive = robotCentricDrive;
     }
 
