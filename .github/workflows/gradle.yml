@@ -19,20 +19,21 @@ jobs:
     container:
       image: wpilib/roborio-cross-ubuntu:2025-22.04
       options: --dns=1.1.1.1 --dns=8.8.8.8
-      
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v4
-    
-    #setup gradlew permission
-    - name: Setup gradlew
+
+    #Setup gradlew permission
+    - name: Setup
       run: |
-        chmod +x gradlew          # gradlew shell file run permission
-        git config --global --add safe.directory $GITHUB_WORKSPACE/y2025
-        
-    #clean cache
-    - name: Clean cache
+        chmod +x gradlew          # gradlew shell file run permission setup
+        git config --global --add safe.directory $GITHUB_WORKSPACE/y2025  # git safe directory setup
+      
+    #Clean cache
+    - name: Clean Cache
       run: |
         ./gradlew clean
         
