@@ -7,26 +7,35 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+    
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    
     # This grabs the WPILib docker container
     container:
       image: wpilib/roborio-cross-ubuntu:2025-22.04
       options: --dns=1.1.1.1 --dns=8.8.8.8
+      
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v4
-    #enter y2025 and setup gradlew permission
-    - name: Enter y2025 and Setup
+    
+    #setup gradlew permission
+    - name: Setup gradlew
       run: |
-        chmod +x gradlew          # gradlew in y2025
+        chmod +x gradlew          # gradlew shell file run permission
         git config --global --add safe.directory $GITHUB_WORKSPACE/y2025
-      
+        
+    #clean cache
+    - name: Clean cache
+      run: |
+        ./gradlew clean
+        
     # compile
     - name: Compile and Test
       run: |
