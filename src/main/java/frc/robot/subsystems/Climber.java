@@ -1,117 +1,107 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
-import frc.robot.Constants;
 import frc.robot.NetworkTables;
+import frc.robot.NetworkTables.ConstantId;
+import frc.robot.sim.PhysicsSim;
 
-public class Climber {
-  private final TalonFX m_motor = new TalonFX(Constants.CLIMBER_MOTOR_ID);
-  private final NetworkTables m_networkTables;
-  private double maxCurrentGoingUp = 0.0;
+import static edu.wpi.first.units.Units.*;
 
-  public Climber(NetworkTables networkTables) {
-    this.m_networkTables = networkTables;
+public class Climber extends edu.wpi.first.wpilibj2.command.SubsystemBase {
+    private final TalonFX m_motor = new TalonFX(13, "rio");
+    private final NetworkTables m_networkTables;
+    private double maxCurrentGoingUp = 0;
 
-    // --- Configure TalonFX ---
-    TalonFXConfiguration cfg = new TalonFXConfiguration();
+    public Climber(NetworkTables networkTables) {
+        m_networkTables = networkTables;
 
-    // Feedback (sensor to mechanism ratio)
-    cfg.Feedback.SensorToMechanismRatio = 125.0; // 125 rotor rotations per mechanism rotation
+        TalonFXConfiguration cfg = new TalonFXConfiguration();
 
-    // Motor output configuration
-    cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        FeedbackConfigs fdb = cfg.getFeedback();
+        fdb.SensorToMechanismRatio = 125;
 
-    // Motion Magic configuration
-    cfg.MotionMagic.MotionMagicCruiseVelocity = 5;   // rotations per second
-    cfg.MotionMagic.MotionMagicAcceleration = 10;    // rotations per second squared
-    cfg.MotionMagic.MotionMagicJerk = 100;           // rotations per second cubed
+        MotorOutputConfigs moc = cfg.getMotorOutput();
+        moc.NeutralMode = NeutralModeValue.Brake;
 
-    // Slot 0 PIDF configuration
-    cfg.Slot0.kS = 0.25;
-    cfg.Slot0.kV = 0.12;
-    cfg.Slot0.kA = 0.01;
-    cfg.Slot0.kP = 60;
-    cfg.Slot0.kI = 0;
-    cfg.Slot0.kD = 0.5;
+        MotionMagicConfigs mm = cfg.getMotionMagic();
+        mm.MotionMagicCruiseVelocity = 5;
+        mm.MotionMagicAcceleration = 10;
+        mm.MotionMagicJerk = 100;
 
-    // Try applying configuration up to 5 times
-    StatusCode status = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
-      status = m_motor.getConfigurator().apply(cfg);
-      if (status.isOK()) break;
+        Slot0Configs slot0 = cfg.getSlot0();
+        slot0.kS = 0.25;
+        slot0.kV = 0.12;
+        slot0.kA = 0.01;
+        slot0.kP = 60;
+        slot0.kI = 0;
+        slot0.kD = 0.5;
+
+        StatusCode status = m_motor.getConfigurator().apply(cfg, 1.0);
+        if (!status.isOK()) {
+            System.out.println("Could not configure climber motor: " + status.toString());
+        }
+
+        if (edu.wpi.first.wpilibj.RobotBase.isSimulation()) {
+            PhysicsSim.getInstance().addTalonFX(m_motor, KilogramsSquareMeters.of(0.001));
+        }
     }
-    if (!status.isOK()) {
-      System.out.println("Could not configure device. Error: " + status.getName());
+
+    public Command ClimbPressed() {
+        return Commands.sequence(
+            Commands.runOnce(() -> {
+                maxCurrentGoingUp = 0;
+                System.out.println("Climbing");
+                m_motor.set(m_networkTables.getDoubleValue(ConstantId.ClimbVelocity));
+            }),
+            Commands.waitSeconds(0.1),
+            Commands.waitUntil(() -> {
+                double torqueCurrent = m_motor.getTorqueCurrent().getValue();
+                if (Math.abs(torqueCurrent) > maxCurrentGoingUp) {
+                    maxCurrentGoingUp = torqueCurrent;
+                }
+                System.out.println("Going up. Torque Current: " + torqueCurrent + " Max current ever: " + maxCurrentGoingUp);
+                return Math.abs(torqueCurrent) > m_networkTables.getCurrentValue(ConstantId.ClimberTorqueCurrentLimit).in(Amperes);
+            }),
+            Commands.runOnce(() -> {
+                System.out.println("Stopping climb because it is at full extension");
+                m_motor.set(0);
+                m_motor.setControl(new PositionDutyCycle(m_motor.getPosition().getValue()));
+            })
+        );
     }
 
-    // Simulation setup
-    if (RobotBase.isSimulation()) {
-      // In simulation, you would normally register this motor with your sim physics engine
-      // PhysicsSim.getInstance().addTalonFX(m_motor, 0.001); // if you have a sim helper class
+    public Command ClimbReleased() {
+        return Commands.runOnce(() -> {
+            System.out.println("Climbing stopped");
+            m_motor.set(0);
+            m_motor.setControl(new PositionDutyCycle(m_motor.getPosition().getValue()));
+        });
     }
-  }
 
-  // --- Command Methods ---
+    public Command UnclimbPressed() {
+        return Commands.runOnce(() -> {
+            System.out.println("Unclimbing");
+            m_motor.set(m_networkTables.getDoubleValue(ConstantId.UnclimbVelocity));
+        });
+    }
 
-  public Command climbPressed() {
-    return Commands.sequence(
-        Commands.runOnce(() -> {
-          maxCurrentGoingUp = 0;
-          System.out.println("Climbing");
-          m_motor.set(m_networkTables.getDoubleValue(NetworkTables.ConstantId.ClimbVelocity));
-        }),
-        Commands.waitSeconds(0.1),
-        Commands.waitUntil(() -> {
-          double torqueCurrent = m_motor.getTorqueCurrent().getValueAsDouble();
-          if (Math.abs(torqueCurrent) > maxCurrentGoingUp) {
-            maxCurrentGoingUp = Math.abs(torqueCurrent);
-          }
-          System.out.println("Going up. Torque Current: " + torqueCurrent +
-              " Max current ever: " + maxCurrentGoingUp);
-
-          double limit = m_networkTables
-              .getCurrentValue(NetworkTables.ConstantId.ClimberTorqueCurrentLimit)
-              .inAmperes();
-
-          return Math.abs(torqueCurrent) > limit;
-        }),
-        Commands.runOnce(() -> {
-          System.out.println("Stopping climb because it is at full extension");
-          m_motor.set(0);
-          m_motor.setControl(new PositionDutyCycle(m_motor.getPosition().getValue()));
-        })
-    );
-  }
-
-  public Command climbReleased() {
-    return Commands.runOnce(() -> {
-      System.out.println("Climbing stopped");
-      m_motor.set(0);
-      m_motor.setControl(new PositionDutyCycle(m_motor.getPosition().getValue()));
-    });
-  }
-
-  public Command unclimbPressed() {
-    return Commands.runOnce(() -> {
-      System.out.println("Unclimbing");
-      m_motor.set(m_networkTables.getDoubleValue(NetworkTables.ConstantId.UnclimbVelocity));
-    });
-  }
-
-  public Command unclimbReleased() {
-    return Commands.runOnce(() -> {
-      System.out.println("Unclimbing stopped");
-      m_motor.set(0);
-    });
-  }
+    public Command UnclimbReleased() {
+        return Commands.runOnce(() -> {
+            System.out.println("Unclimbing stopped");
+            m_motor.set(0);
+        });
+    }
 }
-
