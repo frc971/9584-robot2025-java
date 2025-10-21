@@ -1,9 +1,8 @@
 package frc.robot.sim;
 
 import com.ctre.phoenix6.Utils;
-
-import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.Time;
+import static edu.wpi.first.units.Units.*;
 
 public abstract class SimProfile {
     private boolean running = false;
@@ -11,7 +10,7 @@ public abstract class SimProfile {
 
     public abstract void run();
 
-    protected Measure<Time> getPeriod() {
+    protected Time getPeriod() {
         if (!running) {
             lastTime = Utils.getCurrentTimeSeconds();
             running = true;
