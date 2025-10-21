@@ -9,10 +9,10 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import static edu.wpi.first.units.Units.*;
 
 public class TalonFXSimProfile extends SimProfile {
-    private final DCMotorSim motorSim;
-    private final TalonFXSimState talonFXSim;
+    private DCMotorSim motorSim;
+    private TalonFXSimState talonFXSim;
     private static final double kMotorResistance = 0.002;
-
+    
     public TalonFXSimProfile(TalonFX talonFX, MomentOfInertia rotorInertia) {
         motorSim = new DCMotorSim(
             LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), rotorInertia.in(KilogramSquareMeters), 1),

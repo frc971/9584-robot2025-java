@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
@@ -21,13 +22,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.fromDegrees(180);
     private boolean m_hasAppliedOperatorPerspective = false;
 
-    public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, 
-                                   SwerveModuleConstants... modules) {
-        super(driveTrainConstants, modules);
-        configurePathPlanner();
-        if (edu.wpi.first.wpilibj.RobotBase.isSimulation()) {
+    public CommandSwerveDrivetrain(SwerveDrivetrainConstants drivetrainConstants, SwerveModuleConstants<?, ?, ?>... modules) {
+        super(drivetrainConstants, modules);
+        if (Utils.isSimulation()) {
             startSimThread();
         }
+        configurePathPlanner();
     }
 
     private void configurePathPlanner() {

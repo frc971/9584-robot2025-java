@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import frc.robot.Telemetry;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -117,7 +118,7 @@ public class RobotContainer {
             buttonBoard.button(i).onTrue(Commands.print("Button " + i + " pressed"));
         }
 
-        drivetrain.registerTelemetry(logger::Telemeterize);
+        drivetrain.registerTelemetry(((Telemetry) logger)::Telemeterize);
     }
 
     public void teleopInit() {

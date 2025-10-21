@@ -3,6 +3,7 @@ package frc.robot.sim;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.*;
+import edu.wpi.first.units.measure.MomentOfInertia;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class PhysicsSim {
         return instance;
     }
 
-    public void addTalonFX(TalonFX talonFX, Measure<MomentOfInertiaUnit> rotorInertia) {
+    public void addTalonFX(TalonFX talonFX, MomentOfInertia rotorInertia) {
         simProfiles.add(new TalonFXSimProfile(talonFX, rotorInertia));
     }
 
