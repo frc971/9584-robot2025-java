@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix6.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -16,7 +17,8 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
     private final NetworkTables m_networkTables;
     private final SwerveRequest.RobotCentric m_robotCentricDrive;
 
-    private final com.ctre.phoenix6.hardware.TalonFX armMotor = new TalonFX(16);
+    private final com.ctre.phoenix.motorcontrol.TalonSRXFeedbackDevice armMotor = new TalonFX(16);
+    private final com.ctre.phoenix.motorcontrol.VictorSPXControlMode rollerMotor = new VictorSPXControlMode(18);
 
     public Intake(NetworkTables networkTables, SwerveRequest.RobotCentric robotCentricDrive) {
         m_networkTables = networkTables;
