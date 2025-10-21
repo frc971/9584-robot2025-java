@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,12 +14,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import frc.robot.Telemetry;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.AutoCommands;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.AutoCommands;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -54,11 +54,11 @@ public class RobotContainer {
     private final SlewRateLimiter robotRotateSlewFilter = new SlewRateLimiter(networkTables.getAngularAccelerationValue(NetworkTables.ConstantId.SlewRotateLimit).in(RadiansPerSecondPerSecond));
 
     public RobotContainer() {
-        // Remove AutoCommands registration - you need to create AutoCommands class
-        // AutoBuilder.registerCommand("Eject Coral", autoCommands.EjectCoral());
-        // AutoBuilder.registerCommand("Intake Algae", autoCommands.IntakeAlgae());
-        // AutoBuilder.registerCommand("Eject Algae", autoCommands.EjectAlgae());
-        // AutoBuilder.registerCommand("Intake Coral", autoCommands.IntakeCoral());
+        // Register autonomous commands for PathPlanner
+        NamedCommands.registerCommand("Eject Coral", autoCommands.EjectCoral());
+        NamedCommands.registerCommand("Intake Algae", autoCommands.IntakeAlgae());
+        NamedCommands.registerCommand("Eject Algae", autoCommands.EjectAlgae());
+        NamedCommands.registerCommand("Intake Coral", autoCommands.IntakeCoral());
 
         SmartDashboard.putData("Auto Mode", autoChooser);
         SmartDashboard.putData("Restore Defaults", Commands.runOnce(networkTables::RestoreDefaults));
@@ -118,7 +118,10 @@ public class RobotContainer {
             buttonBoard.button(i).onTrue(Commands.print("Button " + i + " pressed"));
         }
 
-        drivetrain.registerTelemetry(((Telemetry) logger)::Telemeterize);
+        // Register telemetry with explicit type
+        drivetrain.registerTelemetry((com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState state) -> 
+            logger.Telemeterize(state)
+        );
     }
 
     public void teleopInit() {

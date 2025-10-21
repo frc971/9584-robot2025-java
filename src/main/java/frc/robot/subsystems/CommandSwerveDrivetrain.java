@@ -5,7 +5,6 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
@@ -22,12 +21,17 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.fromDegrees(180);
     private boolean m_hasAppliedOperatorPerspective = false;
 
-    public CommandSwerveDrivetrain(SwerveDrivetrainConstants drivetrainConstants, SwerveModuleConstants<?, ?, ?>... modules) {
-        super(drivetrainConstants, modules);
+    public CommandSwerveDrivetrain(
+            SwerveDrivetrainConstants driveTrainConstants,
+            SwerveModuleConstants frontLeft,
+            SwerveModuleConstants frontRight,
+            SwerveModuleConstants backLeft,
+            SwerveModuleConstants backRight) {
+        super(driveTrainConstants, frontLeft, frontRight, backLeft, backRight);
+        configurePathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        configurePathPlanner();
     }
 
     private void configurePathPlanner() {
@@ -39,7 +43,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(alliance -> {
                 setOperatorPerspectiveForward(
-                    alliance == DriverStation.Alliance.Red ? kRedAlliancePerspectiveRotation : kBlueAlliancePerspectiveRotation
+                    alliance == DriverStation.Alliance.Red ? 
+                        kRedAlliancePerspectiveRotation : 
+                        kBlueAlliancePerspectiveRotation
                 );
                 m_hasAppliedOperatorPerspective = true;
             });
