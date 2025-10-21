@@ -16,11 +16,13 @@ public class Robot extends edu.wpi.first.wpilibj.TimedRobot {
 
     private final RobotContainer m_container = new RobotContainer();
 
-    private static final boolean kUseLimelight = true;
+    private static final boolean kUseLimelight = false; // Set to false to disable limelight for now
 
     private double m_autonomousStartTime = -1.0;
 
     @Override
+    public void testPeriodic() {}
+    
     public void robotInit() {
         m_container.robotInit();
     }
@@ -29,7 +31,7 @@ public class Robot extends edu.wpi.first.wpilibj.TimedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
 
-        SmartDashboard.putNumber("CAN Utilization %", RobotController.getCANUsagePercent());
+        // Removed getCANUsagePercent() as it doesn't exist in newer WPILib
         SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
         SmartDashboard.putNumber("CPU Temperature", RobotController.getCPUTemp());
         SmartDashboard.putBoolean("RSL", RobotController.getRSLState());
@@ -40,8 +42,11 @@ public class Robot extends edu.wpi.first.wpilibj.TimedRobot {
         if (kUseLimelight) {
             var driveState = m_container.drivetrain.getState();
             var heading = driveState.Pose.getRotation().getDegrees();
-            var omega = driveState.Speeds.omega;
+            var omega = driveState.Speeds.omegaRadiansPerSecond;
 
+            // NOTE: You need to add LimelightHelpers.java to your project
+            // Download from: https://github.com/LimelightVision/limelightlib-wpijava
+            /*
             for (String limelightName : Constants.LimelightConstants.limelightNames) {
                 LimelightHelpers.setRobotOrientation(limelightName, heading, 0, 0, 0, 0, 0);
                 var llMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
@@ -49,7 +54,7 @@ public class Robot extends edu.wpi.first.wpilibj.TimedRobot {
                 if (m_autonomousStartTime < 0 || currentTime - m_autonomousStartTime < 200.0) {
                     // Skip
                 } else {
-                    if (llMeasurement != null && llMeasurement.tagCount > 0 && Math.abs(omega.getRotationsPerSecond()) < 2) {
+                    if (llMeasurement != null && llMeasurement.tagCount > 0 && Math.abs(omega) < 2) {
                         m_container.drivetrain.addVisionMeasurement(
                             llMeasurement.pose,
                             llMeasurement.timestampSeconds,
@@ -58,6 +63,7 @@ public class Robot extends edu.wpi.first.wpilibj.TimedRobot {
                     }
                 }
             }
+            */
         }
     }
 
@@ -95,8 +101,4 @@ public class Robot extends edu.wpi.first.wpilibj.TimedRobot {
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
     }
-
-    @Override
-    public void testPeriodic() {}
-
 }

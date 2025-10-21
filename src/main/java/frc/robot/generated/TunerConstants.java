@@ -8,10 +8,11 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Measure;
 // Removed unused or unresolved import
-
+import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 import static edu.wpi.first.units.Units.*;
@@ -36,7 +37,7 @@ public class TunerConstants {
 
     public static final double kSlipCurrentA = 300.0;
 
-    public static final double kSpeedAt12Volts = 5.5; // Adjust as per robot
+    public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(5.5);
 
     public static final double kDriveGearRatio = 5.95;
     public static final double kSteerGearRatio = 150.0 / 7.0;

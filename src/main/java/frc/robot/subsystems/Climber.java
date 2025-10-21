@@ -30,18 +30,18 @@ public class Climber extends edu.wpi.first.wpilibj2.command.SubsystemBase {
 
         TalonFXConfiguration cfg = new TalonFXConfiguration();
 
-        FeedbackConfigs fdb = cfg.getFeedback();
+        FeedbackConfigs fdb = cfg.Feedback;
         fdb.SensorToMechanismRatio = 125;
 
-        MotorOutputConfigs moc = cfg.getMotorOutput();
+        MotorOutputConfigs moc = cfg.MotorOutput;
         moc.NeutralMode = NeutralModeValue.Brake;
 
-        MotionMagicConfigs mm = cfg.getMotionMagic();
+        MotionMagicConfigs mm = cfg.MotionMagic;
         mm.MotionMagicCruiseVelocity = 5;
         mm.MotionMagicAcceleration = 10;
         mm.MotionMagicJerk = 100;
 
-        Slot0Configs slot0 = cfg.getSlot0();
+        Slot0Configs slot0 = cfg.Slot0;
         slot0.kS = 0.25;
         slot0.kV = 0.12;
         slot0.kA = 0.01;
@@ -55,7 +55,7 @@ public class Climber extends edu.wpi.first.wpilibj2.command.SubsystemBase {
         }
 
         if (edu.wpi.first.wpilibj.RobotBase.isSimulation()) {
-            PhysicsSim.getInstance().addTalonFX(m_motor, KilogramsSquareMeters.of(0.001));
+            PhysicsSim.getInstance().addTalonFX(m_motor, KilogramSquareMeters.of(0.001));
         }
     }
 
@@ -68,17 +68,17 @@ public class Climber extends edu.wpi.first.wpilibj2.command.SubsystemBase {
             }),
             Commands.waitSeconds(0.1),
             Commands.waitUntil(() -> {
-                double torqueCurrent = m_motor.getTorqueCurrent().getValue();
+                double torqueCurrent = m_motor.getTorqueCurrent().getValueAsDouble();
                 if (Math.abs(torqueCurrent) > maxCurrentGoingUp) {
                     maxCurrentGoingUp = torqueCurrent;
                 }
                 System.out.println("Going up. Torque Current: " + torqueCurrent + " Max current ever: " + maxCurrentGoingUp);
-                return Math.abs(torqueCurrent) > m_networkTables.getCurrentValue(ConstantId.ClimberTorqueCurrentLimit).in(Amperes);
+                return Math.abs(torqueCurrent) > m_networkTables.getCurrentValue(ConstantId.ClimberTorqueCurrentLimit).in(Amps);
             }),
             Commands.runOnce(() -> {
                 System.out.println("Stopping climb because it is at full extension");
                 m_motor.set(0);
-                m_motor.setControl(new PositionDutyCycle(m_motor.getPosition().getValue()));
+                m_motor.setControl(new PositionDutyCycle(m_motor.getPosition().getValueAsDouble()));
             })
         );
     }
@@ -87,7 +87,7 @@ public class Climber extends edu.wpi.first.wpilibj2.command.SubsystemBase {
         return Commands.runOnce(() -> {
             System.out.println("Climbing stopped");
             m_motor.set(0);
-            m_motor.setControl(new PositionDutyCycle(m_motor.getPosition().getValue()));
+            m_motor.setControl(new PositionDutyCycle(m_motor.getPosition().getValueAsDouble()));
         });
     }
 

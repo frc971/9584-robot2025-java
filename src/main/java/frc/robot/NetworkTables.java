@@ -12,6 +12,7 @@ import edu.wpi.first.units.TimeUnit;
 import edu.wpi.first.units.VelocityUnit;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
+import frc.robot.generated.TunerConstants;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -103,7 +104,7 @@ public class NetworkTables {
         add(new ConstantEntry() {{
             networkTableKey = "MaxSpeed";
             type = ConstantType.Velocity;
-            defaultValue.doubleValue = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+            defaultValue.doubleValue = 5.5; //TunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
         }});
         add(new ConstantEntry() {{
             networkTableKey = "MaxAngularRate";
@@ -128,7 +129,7 @@ public class NetworkTables {
         add(new ConstantEntry() {{
             networkTableKey = "SlewTranslateLimit";
             type = ConstantType.Acceleration;
-            defaultValue.doubleValue = 10.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+            defaultValue.doubleValue = 10.0 * 5.5;
         }});
         add(new ConstantEntry() {{
             networkTableKey = "SlewRotateLimit";
@@ -474,6 +475,6 @@ public class NetworkTables {
         if (entry.type != ConstantType.Current) {
             throw new RuntimeException("Constant type mismatch for " + entry.networkTableKey);
         }
-        return Amperes.of(table.getEntry(entry.networkTableKey).getDouble(entry.defaultValue.doubleValue));
+        return Amps.of(table.getEntry(entry.networkTableKey).getDouble(entry.defaultValue.doubleValue));
     }
 }
