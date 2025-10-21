@@ -1,0 +1,142 @@
+package frc.robot;
+
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Intake;
+
+import frc.robot.subsystems.*;
+import frc.robot.RobotContainer;
+
+import static edu.wpi.first.units.Units.*;
+
+public class RobotContainer<AutoCommands> {
+    private final NetworkTables networkTables = new NetworkTables();
+
+    private final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
+        .withDeadband(networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed) * networkTables.getDoubleValue(NetworkTables.ConstantId.ControllerDeadbandPercentage))
+        .withRotationalDeadband(networkTables.getAngularRateValue(NetworkTables.ConstantId.MaxAngularRate) * networkTables.getDoubleValue(NetworkTables.ConstantId.ControllerDeadbandPercentage))
+        .withDriveRequestType(SwerveRequest.DriveRequestType.Velocity);
+
+    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+    private final SwerveRequest.RobotCentric robotCentricDrive = new SwerveRequest.RobotCentric()
+        .withDriveRequestType(SwerveRequest.DriveRequestType.Velocity);
+
+    private final Telemetry logger = new Telemetry(networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed));
+
+    private final CommandXboxController controller = new CommandXboxController(0);
+    private final CommandXboxController buttonBoard = new CommandXboxController(1);
+
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    public final Climber climber = new Climber(networkTables);
+    private final Intake intake = new Intake(networkTables, robotCentricDrive);
+    private final AutoCommands autoCommands = new AutoCommands(intake, networkTables);
+
+    private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("Tests");
+
+    private final SlewRateLimiter fieldXSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
+    private final SlewRateLimiter fieldYSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
+    private final SlewRateLimiter fieldRotateSlewFilter = new SlewRateLimiter(networkTables.getAngularAccelerationValue(NetworkTables.ConstantId.SlewRotateLimit).in(RadiansPerSecondPerSecond));
+    private final SlewRateLimiter robotXSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
+    private final SlewRateLimiter robotYSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
+    private final SlewRateLimiter robotRotateSlewFilter = new SlewRateLimiter(networkTables.getAngularAccelerationValue(NetworkTables.ConstantId.SlewRotateLimit).in(RadiansPerSecondPerSecond));
+
+    public RobotContainer() {
+        AutoBuilder.registerCommand("Eject Coral", autoCommands.EjectCoral());
+        AutoBuilder.registerCommand("Intake Algae", autoCommands.IntakeAlgae());
+        AutoBuilder.registerCommand("Eject Algae", autoCommands.EjectAlgae());
+        AutoBuilder.registerCommand("Intake Coral", autoCommands.IntakeCoral());
+
+        SmartDashboard.putData("Auto Mode", autoChooser);
+
+        SmartDashboard.putData("Restore Defaults", Commands.runOnce(networkTables::RestoreDefaults));
+
+        configureBindings();
+    }
+
+    public void robotInit() {
+        intake.RobotInit();
+    }
+
+    private void configureBindings() {
+        drivetrain.setDefaultCommand(
+            drivetrain.applyRequest(() -> {
+                double exponentVelocity = networkTables.getDoubleValue(NetworkTables.ConstantId.ControllerVelocityCurveExponent);
+                double exponentRotation = networkTables.getDoubleValue(NetworkTables.ConstantId.ControllerRotationCurveExponent);
+                if (!controller.getRightBumper()) {
+                    double fieldX = fieldXSlewFilter.calculate(
+                        networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed).in(MetersPerSecond) * ExponentialConvert(-controller.getLeftY(), exponentVelocity)
+                    );
+                    double fieldY = fieldYSlewFilter.calculate(
+                        networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed).in(MetersPerSecond) * ExponentialConvert(-controller.getLeftX(), exponentVelocity)
+                    );
+                    double fieldRotate = fieldRotateSlewFilter.calculate(
+                        networkTables.getAngularRateValue(NetworkTables.ConstantId.MaxAngularRate).in(RadiansPerSecond) * ExponentialConvert(-controller.getRightX(), exponentRotation)
+                    );
+                    return fieldCentricDrive.withVelocityX(fieldX).withVelocityY(fieldY).withRotationalRate(fieldRotate);
+                } else {
+                    double robotX = robotXSlewFilter.calculate(
+                        networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed).in(MetersPerSecond) * ExponentialConvert(-controller.getLeftY(), exponentVelocity)
+                    );
+                    double robotY = robotYSlewFilter.calculate(
+                        networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed).in(MetersPerSecond) * ExponentialConvert(-controller.getLeftX(), exponentVelocity)
+                    );
+                    double robotRotate = robotRotateSlewFilter.calculate(
+                        networkTables.getAngularRateValue(NetworkTables.ConstantId.MaxAngularRate).in(RadiansPerSecond) * ExponentialConvert(-controller.getRightX(), exponentRotation)
+                    );
+                    return robotCentricDrive.withVelocityX(robotX).withVelocityY(robotY).withRotationalRate(robotRotate);
+                }
+            })
+        );
+
+        controller.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        controller.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX()))));
+
+        controller.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldRelative));
+
+        buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ArmUpButton))
+            .onTrue(intake.ArmUpPressed())
+            .onFalse(intake.ArmUpReleased());
+        // Similarly for other buttons...
+
+        new Trigger(buttonBoard.povUp()).onTrue(intake.CoralEjectPressed()).onFalse(intake.CoralEjectReleased());
+
+        new Trigger(DriverStation::isEnabled).onTrue(climber.ClimbReleased());
+
+        for (int i = 1; i <= 11; i++) {
+            buttonBoard.button(i).onTrue(Commands.print("Button " + i + " pressed"));
+        }
+
+        drivetrain.registerTelemetry(logger::Telemeterize);
+    }
+
+    public void teleopInit() {
+        intake.TeleopInit();
+    }
+
+    public void autonomousInit() {
+        intake.AutonomousInit();
+    }
+
+    public static double ExponentialConvert(double controllerValue, double exponent) {
+        return Math.copySign(Math.pow(Math.abs(controllerValue), exponent), controllerValue);
+    }
+
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
+    }
+}
