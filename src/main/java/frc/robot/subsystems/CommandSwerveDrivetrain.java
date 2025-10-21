@@ -11,8 +11,9 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.generated.TunerConstants;
 
-public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
+public class CommandSwerveDrivetrain extends com.ctre.phoenix6.swerve.SwerveDrivetrain implements Subsystem {
     private static final double kSimLoopPeriod = 0.005;
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;

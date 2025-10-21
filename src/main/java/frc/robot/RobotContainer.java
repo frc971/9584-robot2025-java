@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -19,8 +20,11 @@ import frc.robot.subsystems.AutoCommands;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.Telemetry;
 
 import static edu.wpi.first.units.Units.*;
+
+import java.util.function.Consumer;
 
 public class RobotContainer {
     private final NetworkTables networkTables = new NetworkTables();
@@ -119,9 +123,12 @@ public class RobotContainer {
         }
 
         // Register telemetry with explicit type
-        drivetrain.registerTelemetry((com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState state) -> 
-            logger.Telemeterize(state)
-        );
+        drivetrain.registerTelemetry(logger(Telemetry.telemeterize));
+    }
+
+    private Consumer logger(Object telemeterize) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'logger'");
     }
 
     public void teleopInit() {

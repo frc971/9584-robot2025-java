@@ -6,6 +6,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.LinearVelocity;

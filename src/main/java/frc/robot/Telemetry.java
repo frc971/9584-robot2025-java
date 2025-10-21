@@ -23,6 +23,8 @@ import edu.wpi.first.networktables.DoubleArrayPublisher;
 import static edu.wpi.first.units.Units.*;
 
 public class Telemetry {
+    public static Object telemeterize;
+
     private final double MaxSpeed;
 
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -40,6 +42,10 @@ public class Telemetry {
     private final Mechanism2d[] m_moduleMechanisms = new Mechanism2d[4];
     private final MechanismLigament2d[] m_moduleSpeeds = new MechanismLigament2d[4];
     private final MechanismLigament2d[] m_moduleDirections = new MechanismLigament2d[4];
+
+    private final double[] poseArray = new double[3];
+    private final double[] moduleStatesArray = new double[8];
+    private final double[] moduleTargetsArray = new double[8];
 
     public Telemetry(double maxSpeed) {
         MaxSpeed = maxSpeed;
@@ -67,7 +73,7 @@ public class Telemetry {
         SignalLogger.start();
     }
 
-    public void Telemeterize(SwerveDriveState state) {
+    public void telemeterize(SwerveDriveState state) {
         drivePose.set(state.Pose);
         driveSpeeds.set(state.Speeds);
         driveModuleStates.set(state.ModuleStates);
@@ -79,12 +85,13 @@ public class Telemetry {
         SignalLogger.writeDoubleArray("DriveState/Pose", new double[] {state.Pose.getX(), state.Pose.getY(), state.Pose.getRotation().getDegrees()});
 
         fieldTypePub.set("Field2d");
-        fieldPub.set(new double[] {state.Pose.getX(), state.Pose.getY(), state.Pose.getRotation().getDegrees()});
+        fieldPub.set(poseArray);
 
         for (int i = 0; i < 4; i++) {
-            m_moduleDirections[i].setAngle(state.ModuleStates[i].angle.getDegrees());
             m_moduleSpeeds[i].setAngle(state.ModuleStates[i].angle.getDegrees());
+            m_moduleDirections[i].setAngle(state.ModuleStates[i].angle.getDegrees());
             m_moduleSpeeds[i].setLength(state.ModuleStates[i].speedMetersPerSecond / (2 * MaxSpeed));
+
             SmartDashboard.putData("Module " + i, m_moduleMechanisms[i]);
         }
     }
