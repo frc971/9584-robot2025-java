@@ -13,22 +13,21 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.generated.TunerConstants;
 
-public class CommandSwerveDrivetrain extends com.ctre.phoenix6.swerve.SwerveDrivetrain implements Subsystem {
+public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
     private static final double kSimLoopPeriod = 0.005;
     private Notifier m_simNotifier = null;
-    private double m_lastSimTime;
+    private static double m_lastSimTime;
+    
+        private final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.fromDegrees(0);
+        private final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.fromDegrees(180);
+        private boolean m_hasAppliedOperatorPerspective = false;
+    
+        public CommandSwerveDrivetrain(
+          SwerveDrivetrainConstants drivetrainConstants, SwerveModuleConstants<?, ?, ?>... modules) {
+        super(null, null, null, drivetrainConstants, m_lastSimTime, null, null, modules);
 
-    private final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.fromDegrees(0);
-    private final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.fromDegrees(180);
-    private boolean m_hasAppliedOperatorPerspective = false;
-
-    public CommandSwerveDrivetrain(
-            SwerveDrivetrainConstants driveTrainConstants,
-            SwerveModuleConstants frontLeft,
-            SwerveModuleConstants frontRight,
-            SwerveModuleConstants backLeft,
-            SwerveModuleConstants backRight) {
-        super(driveTrainConstants, frontLeft, frontRight, backLeft, backRight);
+        //TODO: Fill in the nulls with actual parameters as needed
+        
         configurePathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();
