@@ -2,7 +2,6 @@ package frc.robot.sim;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.MomentOfInertia;
 
 import java.util.ArrayList;

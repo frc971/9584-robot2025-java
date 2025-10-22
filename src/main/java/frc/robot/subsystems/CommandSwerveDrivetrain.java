@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.generated.TunerConstants;
+import edu.wpi.first.wpilibj.Timer;
 
 public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
     private static final double kSimLoopPeriod = 0.005;
@@ -24,7 +24,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     
         public CommandSwerveDrivetrain(
           SwerveDrivetrainConstants drivetrainConstants, SwerveModuleConstants<?, ?, ?>... modules) {
-        super(null, null, null, drivetrainConstants, m_lastSimTime, null, null, modules);
+        super(null, null, null, drivetrainConstants, modules);
 
         //TODO: Fill in the nulls with actual parameters as needed
         
@@ -53,10 +53,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     private void startSimThread() {
-        m_lastSimTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+        m_lastSimTime = Timer.getFPGATimestamp();
 
         m_simNotifier = new Notifier(() -> {
-            final double currentTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+            final double currentTime = Timer.getFPGATimestamp();
             double deltaTime = currentTime - m_lastSimTime;
             m_lastSimTime = currentTime;
 
