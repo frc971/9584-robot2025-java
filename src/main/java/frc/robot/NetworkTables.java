@@ -280,7 +280,7 @@ public class NetworkTables {
         add(new ConstantEntry() {{
             networkTableKey = "AutoEjectCoralWait";
             type = ConstantType.Time;
-            defaultValue.doubleValue = 1.0; // Placeholder
+            defaultValue.doubleValue = 1.5; // Placeholder
         }});
         add(new ConstantEntry() {{
             networkTableKey = "AlgaeIntakeSequenceWait";

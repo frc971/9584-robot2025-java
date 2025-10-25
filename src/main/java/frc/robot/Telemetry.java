@@ -29,13 +29,13 @@ public class Telemetry {
 
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
-    private final StructPublisher<Pose2d> drivePose;
-    private final StructPublisher<ChassisSpeeds> driveSpeeds;
-    private final StructArrayPublisher<SwerveModuleState> driveModuleStates;
-    private final StructArrayPublisher<SwerveModuleState> driveModuleTargets;
-    private final StructArrayPublisher<SwerveModulePosition> driveModulePositions;
-    private final DoublePublisher driveTimestamp;
-    private final DoublePublisher driveOdometryFrequency;
+    public final StructPublisher<Pose2d> drivePose;
+    public final StructPublisher<ChassisSpeeds> driveSpeeds;
+    public final StructArrayPublisher<SwerveModuleState> driveModuleStates;
+    public final StructArrayPublisher<SwerveModuleState> driveModuleTargets;
+    public final StructArrayPublisher<SwerveModulePosition> driveModulePositions;
+    public final DoublePublisher driveTimestamp;
+    public final DoublePublisher driveOdometryFrequency;
     private final StringPublisher fieldTypePub;
     private final DoubleArrayPublisher fieldPub;
 
