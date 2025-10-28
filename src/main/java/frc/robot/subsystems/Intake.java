@@ -129,6 +129,12 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
             armMotor.setControl(armPositionControl.withPosition(
                 m_networkTables.getDoubleValue(ConstantId.ArmCoralEjectPosition)
             ));
+            try {
+                wait((long)m_networkTables.getDoubleValue(ConstantId.ArmCoralEjectSequenceWait)*1000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             rollerMotor.setControl(rollerVoltageControl.withOutput(
                 m_networkTables.getDoubleValue(ConstantId.RollerMovementCoralEjectVelocity) * 12.0
             ));
