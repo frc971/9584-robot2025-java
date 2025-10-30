@@ -1,9 +1,6 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
@@ -21,20 +18,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private Notifier m_simNotifier = null;
     private static double m_lastSimTime;
     
-    private final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.fromDegrees(0);
-    private final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.fromDegrees(180);
-    private boolean m_hasAppliedOperatorPerspective = false;
+        private final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.fromDegrees(0);
+        private final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.fromDegrees(180);
+        private boolean m_hasAppliedOperatorPerspective = false;
+    
+        public CommandSwerveDrivetrain(
+          SwerveDrivetrainConstants drivetrainConstants, SwerveModuleConstants<?, ?, ?>... modules) {
+        super(null, null, null, drivetrainConstants, modules);
 
-    public CommandSwerveDrivetrain(
-        SwerveDrivetrainConstants drivetrainConstants, 
-            SwerveModuleConstants<?, ?, ?>... modules) {
-            super(
-                (deviceId, canbus) -> new TalonFX(deviceId, canbus), // driveMotorConstructor
-                (deviceId, canbus) -> new TalonFX(deviceId, canbus), // steerMotorConstructor
-                (deviceId, canbus) -> new CANcoder(deviceId, canbus), // steerEncoderConstructor
-                drivetrainConstants,
-                modules
-            );
+        //TODO: Fill in the nulls with actual parameters as needed
         
         configurePathPlanner();
         if (Utils.isSimulation()) {
@@ -75,10 +67,5 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command applyRequest(java.util.function.Supplier<SwerveRequest> requestSupplier) {
         return Commands.run(() -> setControl(requestSupplier.get()), this);
-    }
-
-    @FunctionalInterface
-    public interface DeviceConstructor {
-        BaseStatusSignal create(int deviceId, String canbus);
     }
 }
