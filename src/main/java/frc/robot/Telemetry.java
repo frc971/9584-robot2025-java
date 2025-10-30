@@ -20,11 +20,10 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 
+
 import static edu.wpi.first.units.Units.*;
 
 public class Telemetry {
-    public static Object telemeterize;
-
     private final double MaxSpeed;
 
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();

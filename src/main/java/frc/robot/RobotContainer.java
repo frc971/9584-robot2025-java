@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AutoCommands;
@@ -22,8 +21,6 @@ import frc.robot.subsystems.Intake;
 import frc.robot.Telemetry;
 
 import static edu.wpi.first.units.Units.*;
-
-import java.util.function.Consumer;
 
 public class RobotContainer {
     private final NetworkTables networkTables = new NetworkTables();
@@ -47,7 +44,7 @@ public class RobotContainer {
     private final Intake intake = new Intake(networkTables, robotCentricDrive);
     private final AutoCommands autoCommands = new AutoCommands(intake, networkTables);
 
-    private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("Tests");
+    private final SendableChooser<Command> autoChooser;
 
     private final SlewRateLimiter fieldXSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
     private final SlewRateLimiter fieldYSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
@@ -63,7 +60,18 @@ public class RobotContainer {
         NamedCommands.registerCommand("Eject Algae", autoCommands.EjectAlgae());
         NamedCommands.registerCommand("Intake Coral", autoCommands.IntakeCoral());
 
+        // Build auto chooser - now with proper error handling
+        SendableChooser<Command> chooser;
+        try {
+            chooser = AutoBuilder.buildAutoChooser("Tests");
+        } catch (Exception e) {
+            DriverStation.reportError("Failed to build auto chooser: " + e.getMessage(), e.getStackTrace());
+            chooser = new SendableChooser<>();
+            chooser.setDefaultOption("None", Commands.none());
+        }
+        autoChooser = chooser;
         SmartDashboard.putData("Auto Mode", autoChooser);
+
         SmartDashboard.putData("Restore Defaults", Commands.runOnce(networkTables::RestoreDefaults));
 
         configureBindings();
@@ -113,21 +121,12 @@ public class RobotContainer {
             .onTrue(intake.ArmUpPressed())
             .onFalse(intake.ArmUpReleased());
 
-        new Trigger(buttonBoard.povUp()).onTrue(intake.CoralEjectPressed()).onFalse(intake.CoralEjectReleased());
+        buttonBoard.povUp().onTrue(intake.CoralEjectPressed()).onFalse(intake.CoralEjectReleased());
 
-        new Trigger(DriverStation::isEnabled).onTrue(climber.ClimbReleased());
+        DriverStation.silenceJoystickConnectionWarning(true);
 
-        for (int i = 1; i <= 11; i++) {
-            buttonBoard.button(i).onTrue(Commands.print("Button " + i + " pressed"));
-        }
-
-        // Register telemetry with explicit type
-        drivetrain.registerTelemetry(logger(Telemetry.telemeterize));
-    }
-
-    private Consumer logger(Object telemeterize) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'logger'");
+        // Register telemetry - pass the method reference correctly
+        drivetrain.registerTelemetry(state -> logger.telemeterize(state));
     }
 
     public void teleopInit() {

@@ -81,4 +81,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public interface DeviceConstructor {
         BaseStatusSignal create(int deviceId, String canbus);
     }
+
+    public void registerTelemetry(Object telemetryFunction) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'registerTelemetry'");
+    }
 }
