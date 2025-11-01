@@ -145,7 +145,7 @@ public class RobotContainer {
             .onTrue(intake.AlgaeEjectPressed())
             .onFalse(intake.AlgaeEjectReleased());
 
-        new Trigger(buttonBoard.povUp()).onTrue(intake.CoralEjectPressed()).onFalse(intake.CoralEjectReleased());
+        buttonBoard.povUp().onTrue(intake.CoralEjectPressed()).onFalse(intake.CoralEjectReleased());
 
         new Trigger(DriverStation::isEnabled).onTrue(climber.ClimbReleased());
 

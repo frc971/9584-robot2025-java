@@ -87,7 +87,7 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
                 m_networkTables.getDoubleValue(ConstantId.ArmIntakePosition)
             ));
             rollerMotor.setControl(rollerVoltageControl.withOutput(
-                m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeIntakeVelocity) * 12.0
+                m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeIntakeVelocity)
             ));
         });
     }
