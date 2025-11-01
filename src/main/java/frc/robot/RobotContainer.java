@@ -19,6 +19,7 @@ import frc.robot.subsystems.AutoCommands;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.NetworkTables.ConstantId;
 import frc.robot.Telemetry;
 
 import static edu.wpi.first.units.Units.*;
@@ -109,9 +110,40 @@ public class RobotContainer {
 
         controller.leftBumper().onTrue(Commands.runOnce(() -> drivetrain.seedFieldCentric()));
 
+        // ButtonBoard bindings
         buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ArmUpButton))
             .onTrue(intake.ArmUpPressed())
             .onFalse(intake.ArmUpReleased());
+        
+        buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ArmDownButton))
+      .onTrue(intake.ArmDownPressed())
+      .onFalse(intake.ArmDownReleased());
+        buttonBoard
+            .button(networkTables.getIntValue(NetworkTables.ConstantId.RollerForwardButton))
+            .onTrue(intake.RollerForwardPressed())
+            .onFalse(intake.RollerForwardReleased());
+        buttonBoard
+            .button(networkTables.getIntValue(NetworkTables.ConstantId.RollerBackwardButton))
+            .onTrue(intake.RollerBackwardPressed())
+            .onFalse(intake.RollerBackwardReleased());
+        buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ClimbButton))
+            .onTrue(climber.ClimbPressed())
+            .onFalse(climber.ClimbReleased());
+        buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.UnclimbButton))
+            .onTrue(climber.UnclimbPressed())
+            .onFalse(climber.UnclimbReleased());
+        buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ResetEncoderButton))
+            .onTrue(intake.ResetEncoderPositionCommand());
+        buttonBoard
+            .axisGreaterThan(
+                networkTables.getIntValue(NetworkTables.ConstantId.AlgaeIntakeButtonAxis), 0.75)
+            .onTrue(intake.AlgaeIntakePressed())
+            .onFalse(intake.AlgaeIntakeReleased());
+        buttonBoard
+            .axisGreaterThan(
+                networkTables.getIntValue(NetworkTables.ConstantId.AlgaeEjectButtonAxis), 0.75)
+            .onTrue(intake.AlgaeEjectPressed())
+            .onFalse(intake.AlgaeEjectReleased());
 
         new Trigger(buttonBoard.povUp()).onTrue(intake.CoralEjectPressed()).onFalse(intake.CoralEjectReleased());
 
