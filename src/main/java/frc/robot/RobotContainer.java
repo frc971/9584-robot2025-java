@@ -12,6 +12,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,7 +26,7 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 
-public class RobotContainer {
+public class RobotContainer extends TimedRobot {
     private final NetworkTables networkTables = new NetworkTables();
 
     private final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
@@ -72,6 +74,12 @@ public class RobotContainer {
 
     public void robotInit() {
         intake.RobotInit();
+
+        SmartDashboard.putBoolean("IsSimulation", RobotBase.isSimulation());
+
+        if (RobotBase.isSimulation()) {
+            System.setProperty("phoenix.staleCheckingEnabled", "false"); // Disable stale checking in simulation
+        }
     }
 
     private void configureBindings() {
