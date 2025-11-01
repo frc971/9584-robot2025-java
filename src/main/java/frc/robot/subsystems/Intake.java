@@ -114,12 +114,7 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
             armMotor.setControl(armPositionControl.withPosition(
                 m_networkTables.getDoubleValue(ConstantId.ArmIntakePosition)
             ));
-            try {
-                wait((long)m_networkTables.getDoubleValue(ConstantId.AlgaeIntakeSequenceWait)*1000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            Commands.waitSeconds(m_networkTables.getTimeValue(ConstantId.AlgaeIntakeSequenceWait).in(Units.Seconds));
             rollerMotor.setControl(rollerVoltageControl.withOutput(
                 m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeIntakeVelocity) * 12.0
             ));
@@ -132,12 +127,7 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
             armMotor.setControl(armPositionControl.withPosition(
                 m_networkTables.getDoubleValue(ConstantId.ArmHoldPosition)
             ));
-            try {
-                wait((long)m_networkTables.getDoubleValue(ConstantId.AlgaeIntakeSequenceWait)*1000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            Commands.waitSeconds(m_networkTables.getTimeValue(ConstantId.AlgaeIntakeSequenceWait).in(Units.Seconds));
             rollerMotor.setControl(rollerVoltageControl.withOutput(0));
         });
     }
@@ -200,12 +190,7 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
             armMotor.setControl(armPositionControl.withPosition(
                 m_networkTables.getDoubleValue(ConstantId.ArmCoralEjectPosition)
             ));
-            try {
-                wait((long)m_networkTables.getDoubleValue(ConstantId.ArmCoralEjectSequenceWait)*1000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            Commands.waitSeconds(m_networkTables.getTimeValue(ConstantId.ArmCoralEjectSequenceWait).in(Units.Seconds));
             rollerMotor.setControl(rollerVoltageControl.withOutput(
                 m_networkTables.getDoubleValue(ConstantId.RollerMovementCoralEjectVelocity) * 12.0
             ));
