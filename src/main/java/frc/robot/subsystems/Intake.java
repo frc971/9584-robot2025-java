@@ -86,8 +86,14 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
             armMotor.setControl(armPositionControl.withPosition(
                 m_networkTables.getDoubleValue(ConstantId.ArmIntakePosition)
             ));
+            try {
+                wait((long)m_networkTables.getDoubleValue(ConstantId.AlgaeIntakeSequenceWait)*1000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             rollerMotor.setControl(rollerVoltageControl.withOutput(
-                m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeIntakeVelocity)
+                m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeIntakeVelocity) * 12.0
             ));
         });
     }
@@ -96,8 +102,14 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
         return Commands.runOnce(() -> {
             System.out.println("============ AlgaeIntakeReleased");
             armMotor.setControl(armPositionControl.withPosition(
-                m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
+                m_networkTables.getDoubleValue(ConstantId.ArmHoldPosition)
             ));
+            try {
+                wait((long)m_networkTables.getDoubleValue(ConstantId.AlgaeIntakeSequenceWait)*1000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             rollerMotor.setControl(rollerVoltageControl.withOutput(0));
         });
     }
