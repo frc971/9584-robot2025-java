@@ -88,7 +88,7 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     public void setDisabledMode() {
-        setBlink(Color.kOrange, 0.5);
+        setRainbow();
     }
 
     public void setTeleopMode() {
