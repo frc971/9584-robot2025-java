@@ -1,14 +1,15 @@
 package frc.robot;
 
-import frc.robot.LimelightHelpers.PoseEstimate;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj.TimedRobot;
+import frc.robot.LimelightHelpers.PoseEstimate;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -117,6 +118,12 @@ public class Robot extends TimedRobot {
         if (kUseLimelight) {
             configureLimelights();
         }
+
+        //simulation joystick warning suppression
+        if (RobotBase.isSimulation()) {
+            DriverStation.silenceJoystickConnectionWarning(true);
+        }
+
     }
 
     @Override
@@ -206,5 +213,12 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        // This prevents the default message and gives you control
+        // If you have physics simulation, put it here
+        // For now: do nothing fast
     }
 }
