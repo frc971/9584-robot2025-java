@@ -3,11 +3,14 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import java.util.concurrent.TimeUnit;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -26,6 +29,31 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
 
     private final PositionVoltage armPositionControl = new PositionVoltage(0);
     private final VoltageOut rollerVoltageControl = new VoltageOut(0);
+
+    public Command algaeIntakePressed() {
+    return Commands.sequence(
+        Commands.runOnce(() -> {
+            System.out.println("============ AlgaeIntakePressed");
+            System.out.println("lowering arm");
+            System.out.println("Position1: " + armMotor.getPosition().getValue());
+
+            armMotor.setControl(armPositionControl.withPosition(
+                m_networkTables.getDoubleValue(ConstantId.ArmIntakePosition)
+            ));
+        }),
+        Commands.waitSeconds(
+            m_networkTables.getTimeValue(ConstantId.AlgaeIntakeSequenceWait).in(Units.Seconds)
+        ),
+        Commands.runOnce(() -> {
+            System.out.println("stopping the lowering of arm");
+            System.out.println("Position2: " + armMotor.getPosition().getValue());
+
+            rollerMotor.setControl(rollerVoltageControl.withOutput(
+                m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeIntakeVelocity) * 12.0
+            ));
+            })
+        );
+    }
 
     public Intake(NetworkTables networkTables, SwerveRequest.RobotCentric robotCentricDrive) {
         m_networkTables = networkTables;

@@ -1,5 +1,10 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -7,13 +12,14 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AutoCommands;
 import frc.robot.subsystems.Climber;
@@ -24,9 +30,7 @@ import frc.robot.Telemetry;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.function.Consumer;
-
-public class RobotContainer {
+public class RobotContainer extends TimedRobot {
     private final NetworkTables networkTables = new NetworkTables();
 
     private final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
@@ -57,13 +61,15 @@ public class RobotContainer {
     private final SlewRateLimiter robotYSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
     private final SlewRateLimiter robotRotateSlewFilter = new SlewRateLimiter(networkTables.getAngularAccelerationValue(NetworkTables.ConstantId.SlewRotateLimit).in(RadiansPerSecondPerSecond));
 
+    // Register autonomous commands for PathPlanner
+    static {
+        NamedCommands.registerCommand("Eject Coral",  Commands.runOnce(() -> System.out.println("Eject Coral")));
+        NamedCommands.registerCommand("Intake Coral", Commands.runOnce(() -> System.out.println("Intake Coral")));
+        NamedCommands.registerCommand("Eject Algae",  Commands.runOnce(() -> System.out.println("Eject Algae")));
+        NamedCommands.registerCommand("Intake Algae", Commands.runOnce(() -> System.out.println("Intake Algae")));
+    }
+    
     public RobotContainer() {
-        // Register autonomous commands for PathPlanner
-        NamedCommands.registerCommand("Eject Coral", autoCommands.EjectCoral());
-        NamedCommands.registerCommand("Intake Algae", autoCommands.IntakeAlgae());
-        NamedCommands.registerCommand("Eject Algae", autoCommands.EjectAlgae());
-        NamedCommands.registerCommand("Intake Coral", autoCommands.IntakeCoral());
-
         SmartDashboard.putData("Auto Mode", autoChooser);
         SmartDashboard.putData("Restore Defaults", Commands.runOnce(networkTables::RestoreDefaults));
 
@@ -72,6 +78,12 @@ public class RobotContainer {
 
     public void robotInit() {
         intake.RobotInit();
+
+        SmartDashboard.putBoolean("IsSimulation", RobotBase.isSimulation());
+
+        if (RobotBase.isSimulation()) {
+            System.setProperty("phoenix.staleCheckingEnabled", "false"); // Disable stale checking in simulation
+        }
     }
 
     private void configureBindings() {
@@ -154,13 +166,15 @@ public class RobotContainer {
         }
 
         // Register telemetry with explicit type
-        drivetrain.registerTelemetry(logger(Telemetry.telemeterize));
+        // not useable for success build
+        // drivetrain.registerTelemetry(logger(Telemetry.telemeterize));
+
     }
 
-    private Consumer logger(Object telemeterize) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'logger'");
-    }
+    //private Consumer logger(Object telemeterize) {
+        // 'todo Auto-generated method stub'
+        //throw new UnsupportedOperationException("Unimplemented method 'logger'");
+    //}
 
     public void teleopInit() {
         intake.TeleopInit();

@@ -82,7 +82,11 @@ public class Telemetry {
         driveTimestamp.set(state.Timestamp);
         driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
 
-        SignalLogger.writeDoubleArray("DriveState/Pose", new double[] {state.Pose.getX(), state.Pose.getY(), state.Pose.getRotation().getDegrees()});
+        poseArray[0] = state.Pose.getX();
+        poseArray[1] = state.Pose.getY();
+        poseArray[2] = state.Pose.getRotation().getDegrees();
+        
+        SignalLogger.writeDoubleArray("DriveState/Pose", poseArray);
 
         fieldTypePub.set("Field2d");
         fieldPub.set(poseArray);
