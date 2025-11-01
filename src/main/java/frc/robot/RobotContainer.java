@@ -122,13 +122,15 @@ public class RobotContainer {
         }
 
         // Register telemetry with explicit type
-        drivetrain.registerTelemetry(logger(Telemetry.telemeterize));
+        // not useable for success build
+        // drivetrain.registerTelemetry(logger(Telemetry.telemeterize));
+
     }
 
-    private Consumer logger(Object telemeterize) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'logger'");
-    }
+    //private Consumer logger(Object telemeterize) {
+        // 'todo Auto-generated method stub'
+        //throw new UnsupportedOperationException("Unimplemented method 'logger'");
+    //}
 
     public void teleopInit() {
         intake.TeleopInit();
