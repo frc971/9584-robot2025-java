@@ -114,6 +114,12 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
             armMotor.setControl(armPositionControl.withPosition(
                 m_networkTables.getDoubleValue(ConstantId.ArmIntakePosition)
             ));
+            try {
+                wait((long)m_networkTables.getDoubleValue(ConstantId.AlgaeIntakeSequenceWait)*1000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             rollerMotor.setControl(rollerVoltageControl.withOutput(
                 m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeIntakeVelocity) * 12.0
             ));
@@ -124,8 +130,14 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
         return Commands.runOnce(() -> {
             System.out.println("============ AlgaeIntakeReleased");
             armMotor.setControl(armPositionControl.withPosition(
-                m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
+                m_networkTables.getDoubleValue(ConstantId.ArmHoldPosition)
             ));
+            try {
+                wait((long)m_networkTables.getDoubleValue(ConstantId.AlgaeIntakeSequenceWait)*1000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             rollerMotor.setControl(rollerVoltageControl.withOutput(0));
         });
     }
@@ -139,7 +151,21 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
 
     public Command ArmUpReleased() {
         return Commands.runOnce(() -> {
-            System.out.println("============ ArmUpReleased");
+            System.out.println("============ Arm stopped");
+            armMotor.set(0);
+        });
+    }
+
+    public Command ArmDownPressed() {
+        return Commands.runOnce(() -> {
+            System.out.println("=========== ArmDownPressed");
+            armMotor.set(m_networkTables.getDoubleValue(ConstantId.ArmDownVelocity));
+        });
+    }
+
+    public Command ArmDownReleased() {
+        return Commands.runOnce(() -> {
+            System.out.println("============ Arm stopped");
             armMotor.set(0);
         });
     }
@@ -148,6 +174,23 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
         return Commands.waitUntil(() -> {
             System.out.println("Beambreak value: " + m_coralBeamBreak.get());
             return m_coralBeamBreak.get();
+        });
+    }
+
+    public Command AlgaeEjectPressed() {
+        return Commands.runOnce(() -> {
+            System.out.println("============= AlgaeEjectPressed");
+            rollerMotor.setControl(rollerVoltageControl.withOutput(
+                m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeEjectVelocity)));
+        });
+    }
+
+    public Command AlgaeEjectReleased() {
+        return Commands.runOnce(() -> {
+            System.out.println("========== AlgaeEjectReleased");
+            armMotor.setControl(armPositionControl.withPosition(
+                m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)));
+            rollerMotor.setControl(rollerVoltageControl.withOutput(0));
         });
     }
 
@@ -178,4 +221,35 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
             rollerMotor.setControl(rollerVoltageControl.withOutput(0));
         });
     }
+
+    public Command RollerForwardPressed(){
+        return Commands.runOnce(() -> {
+            System.out.println("============ Rollers Forward");
+            rollerMotor.setControl(rollerVoltageControl.withOutput(
+                m_networkTables.getDoubleValue(ConstantId.RollerMovementForwardVelocity)));
+        });
+        }
+    
+    public Command RollerForwardReleased(){
+        return Commands.runOnce(() -> {
+            System.out.println("============ Rollers Stopped");
+            rollerMotor.setControl(rollerVoltageControl.withOutput(0));
+        });
+        }
+    
+    public Command RollerBackwardPressed(){
+        return Commands.runOnce(() -> {
+            System.out.println("=========== Rollers Backward");
+            rollerMotor.setControl(rollerVoltageControl.withOutput(
+                m_networkTables.getDoubleValue(ConstantId.RollerMovementBackwardVelocity)
+            ));
+        });
+    }
+
+    public Command RollerBackwardReleased(){
+        return Commands.runOnce(() -> {
+            System.out.println("============ Rollers Stopped");
+            rollerMotor.setControl(rollerVoltageControl.withOutput(0));
+        });
+        }
 }
