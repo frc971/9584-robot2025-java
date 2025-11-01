@@ -155,187 +155,187 @@ public class NetworkTables {
         add(new ConstantEntry() {{
             networkTableKey = "RollerMovementAlgaeIntakeVelocity";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 0.6; // Placeholder, adjust from code
+            defaultValue.doubleValue = 0.5;
         }});
         add(new ConstantEntry() {{
             networkTableKey = "RollerMovementAlgaeEjectVelocity";
             type = ConstantType.Double;
-            defaultValue.doubleValue = -0.6; // Placeholder
+            defaultValue.doubleValue = -0.6;
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmUpVelocity";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 0.3; // Placeholder
+            defaultValue.doubleValue = 0.6; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmDownVelocity";
             type = ConstantType.Double;
-            defaultValue.doubleValue = -0.3; // Placeholder
+            defaultValue.doubleValue = -0.2; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmIntakePosition";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 0.0; // Placeholder
+            defaultValue.doubleValue = -1600; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmHoldPosition";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 0.5; // Placeholder
+            defaultValue.doubleValue = -500; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmCoralEjectPosition";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 1.0; // Placeholder
+            defaultValue.doubleValue = -700; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmDefaultPosition";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 0.0; // Placeholder
+            defaultValue.doubleValue = 700; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmMotorForwardNominalPercentOutput";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 0.0; // Placeholder
+            defaultValue.doubleValue = 0.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmMotorReverseNominalPercentOutput";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 0.0; // Placeholder
+            defaultValue.doubleValue = 0.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmMotorForwardPeakPercentOutput";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 1.0; // Placeholder
+            defaultValue.doubleValue = 0.4; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmMotorReversePeakPercentOutput";
             type = ConstantType.Double;
-            defaultValue.doubleValue = -1.0; // Placeholder
+            defaultValue.doubleValue = -0.4; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmMotorMagicMotionCruiseVelocity";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 200.0; // Placeholder
+            defaultValue.doubleValue = 50.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmMotorMagicMotionAccelerationVelocity";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 100.0; // Placeholder
+            defaultValue.doubleValue = 50.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmMotorProportionalGainValue";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 0.2; // Placeholder
+            defaultValue.doubleValue = 5.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmMotorIntegralGainValue";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 0.0; // Placeholder
+            defaultValue.doubleValue = 0.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmMotorDerivativeGainValue";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 0.0001; // Placeholder
+            defaultValue.doubleValue = 5.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmMotorFeedForwardGainValue";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 0.0; // Placeholder
+            defaultValue.doubleValue = 0.1; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmSelectedSensorPosition";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 0.0; // Placeholder
+            defaultValue.doubleValue = 0.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmMotorAllowableCloseLoopError";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 0.0; // Placeholder
+            defaultValue.doubleValue = 5.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ClimbVelocity";
             type = ConstantType.Double;
-            defaultValue.doubleValue = 1.0; // Placeholder
+            defaultValue.doubleValue = 1.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "UnclimbVelocity";
             type = ConstantType.Double;
-            defaultValue.doubleValue = -1.0; // Placeholder
+            defaultValue.doubleValue = -1.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ClimberTorqueCurrentLimit";
             type = ConstantType.Current;
-            defaultValue.doubleValue = 40.0; // Placeholder
+            defaultValue.doubleValue = 22.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "AutoIntakeAlgaeWait";
             type = ConstantType.Time;
-            defaultValue.doubleValue = 1.0; // Placeholder
+            defaultValue.doubleValue = 1.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "AutoEjectAlgaeWait";
             type = ConstantType.Time;
-            defaultValue.doubleValue = 1.0; // Placeholder
+            defaultValue.doubleValue = 1.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "AutoEjectCoralWait";
             type = ConstantType.Time;
-            defaultValue.doubleValue = 1.5; // Placeholder
+            defaultValue.doubleValue = 0.5; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "AlgaeIntakeSequenceWait";
             type = ConstantType.Time;
-            defaultValue.doubleValue = 0.5; // Placeholder
+            defaultValue.doubleValue = 0.01; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmCoralEjectSequenceWait";
             type = ConstantType.Time;
-            defaultValue.doubleValue = 0.5; // Placeholder
+            defaultValue.doubleValue = 1.5; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ClimbButton";
             type = ConstantType.Int;
-            defaultValue.intValue = 1; // Placeholder
+            defaultValue.intValue = 2; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "UnclimbButton";
             type = ConstantType.Int;
-            defaultValue.intValue = 2; // Placeholder
+            defaultValue.intValue = 1; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "RollerForwardButton";
             type = ConstantType.Int;
-            defaultValue.intValue = 3; // Placeholder
+            defaultValue.intValue = 4; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "RollerBackwardButton";
             type = ConstantType.Int;
-            defaultValue.intValue = 4; // Placeholder
+            defaultValue.intValue = 3; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmUpButton";
             type = ConstantType.Int;
-            defaultValue.intValue = 5; // Placeholder
+            defaultValue.intValue = 6; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ArmDownButton";
             type = ConstantType.Int;
-            defaultValue.intValue = 6; // Placeholder
+            defaultValue.intValue = 5; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ResetEncoderButton";
             type = ConstantType.Int;
-            defaultValue.intValue = 7; // Placeholder
+            defaultValue.intValue = 8; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "AlgaeIntakeButtonAxis";
             type = ConstantType.Int;
-            defaultValue.intValue = 2; // Placeholder
+            defaultValue.intValue = 2; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "AlgaeEjectButtonAxis";
             type = ConstantType.Int;
-            defaultValue.intValue = 3; // Placeholder
+            defaultValue.intValue = 3; 
         }});
     }};
 
