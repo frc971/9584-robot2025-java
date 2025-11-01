@@ -214,4 +214,11 @@ public class Robot extends TimedRobot {
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
     }
+
+    @Override
+    public void simulationPeriodic() {
+        // This prevents the default message and gives you control
+        // If you have physics simulation, put it here
+        // For now: do nothing fast
+    }
 }

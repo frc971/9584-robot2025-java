@@ -1,5 +1,10 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -13,17 +18,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AutoCommands;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
-import frc.robot.Telemetry;
-
-import static edu.wpi.first.units.Units.*;
-
-import java.util.function.Consumer;
 
 public class RobotContainer {
     private final NetworkTables networkTables = new NetworkTables();
@@ -63,6 +62,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Eject Algae",  Commands.runOnce(() -> System.out.println("Eject Algae")));
         NamedCommands.registerCommand("Intake Algae", Commands.runOnce(() -> System.out.println("Intake Algae")));
     }
+    
     public RobotContainer() {
         SmartDashboard.putData("Auto Mode", autoChooser);
         SmartDashboard.putData("Restore Defaults", Commands.runOnce(networkTables::RestoreDefaults));
