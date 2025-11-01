@@ -128,8 +128,8 @@ public class RobotContainer extends TimedRobot {
             .onFalse(intake.ArmUpReleased());
         
         buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ArmDownButton))
-      .onTrue(intake.ArmDownPressed())
-      .onFalse(intake.ArmDownReleased());
+            .onTrue(intake.ArmDownPressed())
+            .onFalse(intake.ArmDownReleased());
         buttonBoard
             .button(networkTables.getIntValue(NetworkTables.ConstantId.RollerForwardButton))
             .onTrue(intake.RollerForwardPressed())
