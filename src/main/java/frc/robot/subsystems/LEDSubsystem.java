@@ -18,7 +18,7 @@ public class LEDSubsystem extends SubsystemBase {
     private Color m_secondaryColor = new Color(0, 0, 0);
     private double m_animationCounter = 0.0;
     private double m_blinkFrequency = 1.0;
-
+    private Color spartanGold = new Color(0xFE, 0xC8, 0x08);
     private enum Pattern {
         SOLID,
         RAINBOW,
@@ -26,6 +26,8 @@ public class LEDSubsystem extends SubsystemBase {
         BLINK,
         ALTERNATING,
         BREATHE,
+        GRADIENT_WAVE,
+        ALLIANCE_GRADIENT,
         OFF
     }
 
@@ -80,6 +82,17 @@ public class LEDSubsystem extends SubsystemBase {
         m_primaryColor = color;
     }
 
+    public void setGradientWave(Color targetColor) {
+        m_currentPattern = Pattern.GRADIENT_WAVE;
+        m_primaryColor = targetColor;
+    }
+
+    public void setAllianceGradient(Color fromColor, Color toColor) {
+        m_currentPattern = Pattern.ALLIANCE_GRADIENT;
+        m_primaryColor = fromColor;
+        m_secondaryColor = toColor;
+    }
+
     public void off() {
         m_currentPattern = Pattern.OFF;
         for (int i = 0; i < kLength; i++) {
@@ -92,18 +105,27 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     public void setTeleopMode() {
-        setAllianceColor();
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            if (alliance.get() == DriverStation.Alliance.Red) {
+                setAllianceGradient(Color.kRed, spartanGold);
+            } else {
+                setAllianceGradient(Color.kBlue, spartanGold);
+            }
+        } else {
+            setGradientWave(spartanGold);
+        }
     }
 
     public void setAutonomousMode() {
-        setChase(Color.kGreen);
+        setChase(spartanGold);
     }
 
     public void setAllianceColor() {
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
             if (alliance.get() == DriverStation.Alliance.Red) {
-                setSolidColor(Color.kGreen);
+                setSolidColor(Color.kRed);
             } else {
                 setSolidColor(Color.kBlue);
             }
@@ -131,6 +153,12 @@ public class LEDSubsystem extends SubsystemBase {
                 break;
             case BREATHE:
                 updateBreathe();
+                break;
+            case GRADIENT_WAVE:
+                updateGradientWave();
+                break;
+            case ALLIANCE_GRADIENT:
+                updateAllianceGradient();
                 break;
             case OFF:
                 break;
@@ -192,10 +220,36 @@ public class LEDSubsystem extends SubsystemBase {
         double brightness = (Math.sin(m_animationCounter * 2.0) + 1.0) / 2.0;
 
         for (int i = 0; i < kLength; i++) {
-            m_ledBuffer.setRGB(i,
-                (int)(m_primaryColor.red * 255 * brightness),
-                (int)(m_primaryColor.green * 255 * brightness),
-                (int)(m_primaryColor.blue * 255 * brightness));
+            int r = (int)(m_primaryColor.red * 255 * brightness);
+            int g = (int)(m_primaryColor.green * 255 * brightness);
+            int b = (int)(m_primaryColor.blue * 255 * brightness);
+        
+            m_ledBuffer.setRGB(i, g, r, b);
+        }
+    }
+
+    private void updateGradientWave() {
+        double offset = (m_animationCounter * 0.5) % 1.0;
+        
+        for (int i = 0; i < kLength; i++) {
+            double position = ((double)i / kLength + offset) % 1.0;
+            
+            int r = (int)(m_primaryColor.red * 255 * position);
+            int g = (int)(m_primaryColor.green * 255 * position);
+            int b = (int)(m_primaryColor.blue * 255 * position);
+            m_ledBuffer.setRGB(i, g, r, b);
+        }
+    }
+
+    private void updateAllianceGradient() {
+        double offset = (m_animationCounter * 0.5) % 1.0;
+        
+        for (int i = 0; i < kLength; i++) {
+            double position = ((double)i / kLength + offset) % 1.0;
+            int r = (int)((m_primaryColor.red + (m_secondaryColor.red - m_primaryColor.red) * position) * 255);
+            int g = (int)((m_primaryColor.green + (m_secondaryColor.green - m_primaryColor.green) * position) * 255);
+            int b = (int)((m_primaryColor.blue + (m_secondaryColor.blue - m_primaryColor.blue) * position) * 255);
+            m_ledBuffer.setRGB(i, g, r, b);
         }
     }
 }
