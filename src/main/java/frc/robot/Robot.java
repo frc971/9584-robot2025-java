@@ -10,11 +10,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.LimelightHelpers.PoseEstimate;
+import frc.robot.subsystems.LEDSubsystem;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private final RobotContainer m_container = new RobotContainer();
+    private final LEDSubsystem m_leds = new LEDSubsystem();
 
     private static final boolean kUseLimelight = true; // Set to true to enable limelight for now
 
@@ -167,7 +169,9 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        m_leds.setDisabledMode();
+    }
 
     @Override
     public void disabledPeriodic() {}
@@ -180,6 +184,7 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.schedule();
         }
         m_container.autonomousInit();
+        m_leds.setAutonomousMode();
         
         if (kUseLimelight) {
             for (String limelightName : Constants.LimelightConstants.limelightNames) {
@@ -198,6 +203,7 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.cancel();
         }
         m_container.teleopInit();
+        m_leds.setTeleopMode();
         
         if (kUseLimelight) {
             for (String limelightName : Constants.LimelightConstants.limelightNames) {
