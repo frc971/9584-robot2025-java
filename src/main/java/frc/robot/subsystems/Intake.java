@@ -1,23 +1,20 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
-import java.util.concurrent.TimeUnit;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-
 import frc.robot.NetworkTables;
 import frc.robot.NetworkTables.ConstantId;
-import com.ctre.phoenix6.swerve.SwerveRequest;
 
 public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
     private final DigitalInput m_coralBeamBreak = new DigitalInput(0);
@@ -114,12 +111,7 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
             armMotor.setControl(armPositionControl.withPosition(
                 m_networkTables.getDoubleValue(ConstantId.ArmIntakePosition)
             ));
-            try {
-                wait((long)m_networkTables.getDoubleValue(ConstantId.AlgaeIntakeSequenceWait)*1000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            Commands.waitSeconds(m_networkTables.getTimeValue(ConstantId.AlgaeIntakeSequenceWait).in(Units.Seconds));
             rollerMotor.setControl(rollerVoltageControl.withOutput(
                 m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeIntakeVelocity) * 12.0
             ));
@@ -132,12 +124,7 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
             armMotor.setControl(armPositionControl.withPosition(
                 m_networkTables.getDoubleValue(ConstantId.ArmHoldPosition)
             ));
-            try {
-                wait((long)m_networkTables.getDoubleValue(ConstantId.AlgaeIntakeSequenceWait)*1000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            Commands.waitSeconds(m_networkTables.getTimeValue(ConstantId.AlgaeIntakeSequenceWait).in(Units.Seconds));
             rollerMotor.setControl(rollerVoltageControl.withOutput(0));
         });
     }
@@ -200,12 +187,7 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
             armMotor.setControl(armPositionControl.withPosition(
                 m_networkTables.getDoubleValue(ConstantId.ArmCoralEjectPosition)
             ));
-            try {
-                wait((long)m_networkTables.getDoubleValue(ConstantId.ArmCoralEjectSequenceWait)*1000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            Commands.waitSeconds(m_networkTables.getTimeValue(ConstantId.ArmCoralEjectSequenceWait).in(Units.Seconds));
             rollerMotor.setControl(rollerVoltageControl.withOutput(
                 m_networkTables.getDoubleValue(ConstantId.RollerMovementCoralEjectVelocity) * 12.0
             ));
@@ -226,7 +208,7 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
         return Commands.runOnce(() -> {
             System.out.println("============ Rollers Forward");
             rollerMotor.setControl(rollerVoltageControl.withOutput(
-                m_networkTables.getDoubleValue(ConstantId.RollerMovementForwardVelocity)));
+                m_networkTables.getDoubleValue(ConstantId.RollerMovementForwardVelocity) * 12.0));
         });
         }
     

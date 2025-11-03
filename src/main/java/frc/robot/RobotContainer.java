@@ -117,49 +117,56 @@ public class RobotContainer extends TimedRobot {
             })
         );
 
-        controller.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        controller.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX()))));
+        new Trigger(controller.a().whileTrue(drivetrain.applyRequest(() -> brake)));
+        new Trigger(controller.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX())))));
 
-        controller.leftBumper().onTrue(Commands.runOnce(() -> drivetrain.seedFieldCentric()));
+        new Trigger(controller.leftBumper().onTrue(Commands.runOnce(() -> drivetrain.seedFieldCentric())));
 
         // ButtonBoard bindings
-        buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ArmUpButton))
+        new Trigger(buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ArmUpButton))
             .onTrue(intake.ArmUpPressed())
-            .onFalse(intake.ArmUpReleased());
+            .onFalse(intake.ArmUpReleased()));
         
-        buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ArmDownButton))
-      .onTrue(intake.ArmDownPressed())
-      .onFalse(intake.ArmDownReleased());
-        buttonBoard
+        new Trigger(buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ArmDownButton))
+            .onTrue(intake.ArmDownPressed())
+            .onFalse(intake.ArmDownReleased()));
+
+        new Trigger(buttonBoard
             .button(networkTables.getIntValue(NetworkTables.ConstantId.RollerForwardButton))
             .onTrue(intake.RollerForwardPressed())
-            .onFalse(intake.RollerForwardReleased());
-        buttonBoard
+            .onFalse(intake.RollerForwardReleased()));
+
+        new Trigger(buttonBoard
             .button(networkTables.getIntValue(NetworkTables.ConstantId.RollerBackwardButton))
             .onTrue(intake.RollerBackwardPressed())
-            .onFalse(intake.RollerBackwardReleased());
-        buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ClimbButton))
+            .onFalse(intake.RollerBackwardReleased()));
+
+        new Trigger(buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ClimbButton))
             .onTrue(climber.ClimbPressed())
-            .onFalse(climber.ClimbReleased());
-        buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.UnclimbButton))
+            .onFalse(climber.ClimbReleased())); //working
+
+        new Trigger(buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.UnclimbButton))
             .onTrue(climber.UnclimbPressed())
-            .onFalse(climber.UnclimbReleased());
-        buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ResetEncoderButton))
-            .onTrue(intake.ResetEncoderPositionCommand());
-        buttonBoard
+            .onFalse(climber.UnclimbReleased())); //working
+
+        new Trigger(buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ResetEncoderButton))
+            .onTrue(intake.ResetEncoderPositionCommand()));
+
+        new Trigger(buttonBoard
             .axisGreaterThan(
                 networkTables.getIntValue(NetworkTables.ConstantId.AlgaeIntakeButtonAxis), 0.75)
             .onTrue(intake.AlgaeIntakePressed())
-            .onFalse(intake.AlgaeIntakeReleased());
-        buttonBoard
+            .onFalse(intake.AlgaeIntakeReleased()));
+
+        new Trigger(buttonBoard
             .axisGreaterThan(
                 networkTables.getIntValue(NetworkTables.ConstantId.AlgaeEjectButtonAxis), 0.75)
             .onTrue(intake.AlgaeEjectPressed())
-            .onFalse(intake.AlgaeEjectReleased());
+            .onFalse(intake.AlgaeEjectReleased()));
 
-        buttonBoard.povUp().onTrue(intake.CoralEjectPressed()).onFalse(intake.CoralEjectReleased());
+        new Trigger(buttonBoard.povUp().onTrue(intake.CoralEjectPressed()).onFalse(intake.CoralEjectReleased()));
 
-        new Trigger(DriverStation::isEnabled).onTrue(climber.ClimbReleased());
+        new Trigger(DriverStation::isEnabled).onTrue(climber.ClimbReleased()); //working
 
         for (int i = 1; i <= 11; i++) {
             buttonBoard.button(i).onTrue(Commands.print("Button " + i + " pressed"));
