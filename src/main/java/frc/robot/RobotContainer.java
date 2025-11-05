@@ -77,13 +77,14 @@ public class RobotContainer extends TimedRobot {
     }
 
     public void robotInit() {
-        superstructure.RobotInit();
-
+        
         SmartDashboard.putBoolean("IsSimulation", RobotBase.isSimulation());
 
         if (RobotBase.isSimulation()) {
             System.setProperty("phoenix.staleCheckingEnabled", "false"); // Disable stale checking in simulation
         }
+
+        superstructure.RobotInit();
     }
 
     private void configureBindings() {
