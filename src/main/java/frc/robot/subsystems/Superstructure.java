@@ -7,7 +7,6 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -16,10 +15,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.NetworkTables;
 import frc.robot.NetworkTables.ConstantId;
 
-public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
+public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase {
     private final DigitalInput m_coralBeamBreak = new DigitalInput(0);
     private final NetworkTables m_networkTables;
-    private final SwerveRequest.RobotCentric m_robotCentricDrive;
+    private final CommandSwerveDrivetrain m_robotDrivetrain;
 
     private final TalonFX armMotor = new TalonFX(16);
     private final TalonFX rollerMotor = new TalonFX(17); // Added missing roller motor
@@ -52,9 +51,9 @@ public class Intake extends edu.wpi.first.wpilibj2.command.SubsystemBase {
         );
     }
 
-    public Intake(NetworkTables networkTables, SwerveRequest.RobotCentric robotCentricDrive) {
+    public Superstructure(NetworkTables networkTables, CommandSwerveDrivetrain drivetrain) {
         m_networkTables = networkTables;
-        m_robotCentricDrive = robotCentricDrive;
+        m_robotDrivetrain = drivetrain;
     }
 
     public void RobotInit() {

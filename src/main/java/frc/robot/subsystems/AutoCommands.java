@@ -2,14 +2,14 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.NetworkTables;
 
 public class AutoCommands {
-    private final Intake intake;
+    private final Superstructure intake;
     private final NetworkTables networkTables;
 
-    public AutoCommands(Intake intake, NetworkTables networkTables) {
+    public AutoCommands(Superstructure intake, NetworkTables networkTables) {
         this.intake = intake;
         this.networkTables = networkTables;
     }

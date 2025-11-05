@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 
+import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -24,11 +25,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AutoCommands;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Intake;
-import frc.robot.NetworkTables.ConstantId;
-import frc.robot.Telemetry;
-
-import static edu.wpi.first.units.Units.*;
+import frc.robot.subsystems.Superstructure;
 
 public class RobotContainer extends TimedRobot {
     private final NetworkTables networkTables = new NetworkTables();
@@ -41,7 +38,10 @@ public class RobotContainer extends TimedRobot {
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     private final SwerveRequest.RobotCentric robotCentricDrive = new SwerveRequest.RobotCentric();
 
-    private final Telemetry logger = new Telemetry(networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed).in(MetersPerSecond));
+    private double MAX_SPEED =
+      TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+
+    private final Telemetry logger = new Telemetry(MAX_SPEED);
 
     private final CommandXboxController controller = new CommandXboxController(0);
     private final CommandXboxController buttonBoard = new CommandXboxController(1);
@@ -49,7 +49,7 @@ public class RobotContainer extends TimedRobot {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     public final Climber climber = new Climber(networkTables);
-    private final Intake intake = new Intake(networkTables, robotCentricDrive);
+    private final Superstructure intake = new Superstructure(networkTables, drivetrain);
     private final AutoCommands autoCommands = new AutoCommands(intake, networkTables);
 
     private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("Tests");
@@ -60,6 +60,8 @@ public class RobotContainer extends TimedRobot {
     private final SlewRateLimiter robotXSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
     private final SlewRateLimiter robotYSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
     private final SlewRateLimiter robotRotateSlewFilter = new SlewRateLimiter(networkTables.getAngularAccelerationValue(NetworkTables.ConstantId.SlewRotateLimit).in(RadiansPerSecondPerSecond));
+
+    private final Superstructure superstructure = new Superstructure(networkTables, drivetrain);
 
     // Register autonomous commands for PathPlanner
     static {
@@ -173,15 +175,10 @@ public class RobotContainer extends TimedRobot {
         }
 
         // Register telemetry with explicit type
-        // not useable for success build
-        // drivetrain.registerTelemetry(logger(Telemetry.telemeterize));
+        // fixed
+        drivetrain.registerTelemetry(logger::telemeterize);
 
     }
-
-    //private Consumer logger(Object telemeterize) {
-        // 'todo Auto-generated method stub'
-        //throw new UnsupportedOperationException("Unimplemented method 'logger'");
-    //}
 
     public void teleopInit() {
         intake.TeleopInit();
