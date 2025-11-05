@@ -49,8 +49,8 @@ public class RobotContainer extends TimedRobot {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     public final Climber climber = new Climber(networkTables);
-    private final Superstructure intake = new Superstructure(networkTables, drivetrain);
-    private final AutoCommands autoCommands = new AutoCommands(intake, networkTables);
+    private final Superstructure superstructure = new Superstructure(networkTables, drivetrain);
+    private final AutoCommands autoCommands = new AutoCommands(superstructure, networkTables);
 
     private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("Tests");
 
@@ -60,8 +60,6 @@ public class RobotContainer extends TimedRobot {
     private final SlewRateLimiter robotXSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
     private final SlewRateLimiter robotYSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
     private final SlewRateLimiter robotRotateSlewFilter = new SlewRateLimiter(networkTables.getAngularAccelerationValue(NetworkTables.ConstantId.SlewRotateLimit).in(RadiansPerSecondPerSecond));
-
-    private final Superstructure superstructure = new Superstructure(networkTables, drivetrain);
 
     // Register autonomous commands for PathPlanner
     static {
@@ -79,7 +77,7 @@ public class RobotContainer extends TimedRobot {
     }
 
     public void robotInit() {
-        intake.RobotInit();
+        superstructure.RobotInit();
 
         SmartDashboard.putBoolean("IsSimulation", RobotBase.isSimulation());
 
@@ -126,22 +124,22 @@ public class RobotContainer extends TimedRobot {
 
         // ButtonBoard bindings
         new Trigger(buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ArmUpButton))
-            .onTrue(intake.ArmUpPressed())
-            .onFalse(intake.ArmUpReleased()));
+            .onTrue(superstructure.ArmUpPressed())
+            .onFalse(superstructure.ArmUpReleased()));
         
         new Trigger(buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ArmDownButton))
-            .onTrue(intake.ArmDownPressed())
-            .onFalse(intake.ArmDownReleased()));
+            .onTrue(superstructure.ArmDownPressed())
+            .onFalse(superstructure.ArmDownReleased()));
 
         new Trigger(buttonBoard
             .button(networkTables.getIntValue(NetworkTables.ConstantId.RollerForwardButton))
-            .onTrue(intake.RollerForwardPressed())
-            .onFalse(intake.RollerForwardReleased()));
+            .onTrue(superstructure.RollerForwardPressed())
+            .onFalse(superstructure.RollerForwardReleased()));
 
         new Trigger(buttonBoard
             .button(networkTables.getIntValue(NetworkTables.ConstantId.RollerBackwardButton))
-            .onTrue(intake.RollerBackwardPressed())
-            .onFalse(intake.RollerBackwardReleased()));
+            .onTrue(superstructure.RollerBackwardPressed())
+            .onFalse(superstructure.RollerBackwardReleased()));
 
         new Trigger(buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ClimbButton))
             .onTrue(climber.ClimbPressed())
@@ -152,21 +150,21 @@ public class RobotContainer extends TimedRobot {
             .onFalse(climber.UnclimbReleased())); //working
 
         new Trigger(buttonBoard.button(networkTables.getIntValue(NetworkTables.ConstantId.ResetEncoderButton))
-            .onTrue(intake.ResetEncoderPositionCommand()));
+            .onTrue(superstructure.ResetEncoderPositionCommand()));
 
         new Trigger(buttonBoard
             .axisGreaterThan(
                 networkTables.getIntValue(NetworkTables.ConstantId.AlgaeIntakeButtonAxis), 0.75)
-            .onTrue(intake.AlgaeIntakePressed())
-            .onFalse(intake.AlgaeIntakeReleased()));
+            .onTrue(superstructure.AlgaeIntakePressed())
+            .onFalse(superstructure.AlgaeIntakeReleased()));
 
         new Trigger(buttonBoard
             .axisGreaterThan(
                 networkTables.getIntValue(NetworkTables.ConstantId.AlgaeEjectButtonAxis), 0.75)
-            .onTrue(intake.AlgaeEjectPressed())
-            .onFalse(intake.AlgaeEjectReleased()));
+            .onTrue(superstructure.AlgaeEjectPressed())
+            .onFalse(superstructure.AlgaeEjectReleased()));
 
-        new Trigger(buttonBoard.povUp().onTrue(intake.CoralEjectPressed()).onFalse(intake.CoralEjectReleased()));
+        new Trigger(buttonBoard.povUp().onTrue(superstructure.CoralEjectPressed()).onFalse(superstructure.CoralEjectReleased()));
 
         new Trigger(DriverStation::isEnabled).onTrue(climber.ClimbReleased()); //working
 
@@ -181,11 +179,11 @@ public class RobotContainer extends TimedRobot {
     }
 
     public void teleopInit() {
-        intake.TeleopInit();
+        superstructure.TeleopInit();
     }
 
     public void autonomousInit() {
-        intake.AutonomousInit();
+        superstructure.AutonomousInit();
     }
 
     public static double ExponentialConvert(double controllerValue, double exponent) {
