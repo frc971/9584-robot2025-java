@@ -6,38 +6,39 @@ import frc.robot.subsystems.Superstructure;
 import frc.robot.NetworkTables;
 
 public class AutoCommands {
-    private final Superstructure intake;
+    private final Superstructure superstructure;
     private final NetworkTables networkTables;
 
-    public AutoCommands(Superstructure intake, NetworkTables networkTables) {
-        this.intake = intake;
+    public AutoCommands(Superstructure superstructure, NetworkTables networkTables) {
+        this.superstructure = superstructure;
         this.networkTables = networkTables;
     }
 
     public Command EjectCoral() {
         return Commands.sequence(
-            intake.CoralEjectPressed(),
+            superstructure.CoralEjectPressed(),
             Commands.waitSeconds(networkTables.getTimeValue(NetworkTables.ConstantId.AutoEjectCoralWait).in(edu.wpi.first.units.Units.Seconds)),
-            intake.CoralEjectReleased()
+            superstructure.CoralEjectReleased()
         );
     }
 
     public Command IntakeAlgae() {
         return Commands.sequence(
-            intake.AlgaeIntakePressed(),
+            superstructure.AlgaeIntakePressed(),
             Commands.waitSeconds(networkTables.getTimeValue(NetworkTables.ConstantId.AutoIntakeAlgaeWait).in(edu.wpi.first.units.Units.Seconds)),
-            intake.AlgaeIntakeReleased()
+            superstructure.AlgaeIntakeReleased()
         );
     }
 
     public Command EjectAlgae() {
         return Commands.sequence(
             // Implement algae eject
-            Commands.waitSeconds(networkTables.getTimeValue(NetworkTables.ConstantId.AutoEjectAlgaeWait).in(edu.wpi.first.units.Units.Seconds))
+            Commands.waitSeconds(networkTables.getTimeValue(NetworkTables.ConstantId.AutoEjectAlgaeWait).in(edu.wpi.first.units.Units.Seconds)),
+            superstructure.AlgaeEjectReleased()
         );
     }
 
     public Command IntakeCoral() {
-        return intake.AutoIntakeCoral();
+        return superstructure.AutoIntakeCoral();
     }
 }
