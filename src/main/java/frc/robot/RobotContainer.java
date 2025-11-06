@@ -165,7 +165,7 @@ public class RobotContainer extends TimedRobot {
             .onTrue(superstructure.AlgaeEjectPressed())
             .onFalse(superstructure.AlgaeEjectReleased()));
 
-        new Trigger(buttonBoard.povUp().onTrue(superstructure.CoralEjectPressed()).onFalse(superstructure.CoralEjectReleased()));
+        buttonBoard.povUp().onTrue(superstructure.CoralEjectPressed()).onFalse(superstructure.CoralEjectReleased());
 
         new Trigger(DriverStation::isEnabled).onTrue(climber.ClimbReleased()); //working
 
