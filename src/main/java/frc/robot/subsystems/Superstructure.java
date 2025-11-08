@@ -1,12 +1,9 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -20,36 +17,8 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     private final NetworkTables m_networkTables;
     private final CommandSwerveDrivetrain m_robotDrivetrain;
 
-    private final TalonFX armMotor = new TalonFX(16);
-    private final TalonFX rollerMotor = new TalonFX(18); // Added missing roller motor
-
-    private final PositionVoltage armPositionControl = new PositionVoltage(0);
-    private final VoltageOut rollerVoltageControl = new VoltageOut(0);
-
-    public Command algaeIntakePressed() {
-    return Commands.sequence(
-        Commands.runOnce(() -> {
-            System.out.println("============ AlgaeIntakePressed");
-            System.out.println("lowering arm");
-            System.out.println("Position1: " + armMotor.getPosition().getValue());
-
-            armMotor.setControl(armPositionControl.withPosition(
-                m_networkTables.getDoubleValue(ConstantId.ArmIntakePosition)
-            ));
-        }),
-        Commands.waitSeconds(
-            m_networkTables.getTimeValue(ConstantId.AlgaeIntakeSequenceWait).in(Units.Seconds)
-        ),
-        Commands.runOnce(() -> {
-            System.out.println("stopping the lowering of arm");
-            System.out.println("Position2: " + armMotor.getPosition().getValue());
-
-            rollerMotor.setControl(rollerVoltageControl.withOutput(
-                m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeIntakeVelocity) * 12.0
-            ));
-            })
-        );
-    }
+    private final TalonSRX armMotor = new TalonSRX(16);
+    private final VictorSPX rollerMotor = new VictorSPX(18);
 
     public Superstructure(NetworkTables networkTables, CommandSwerveDrivetrain drivetrain) {
         m_networkTables = networkTables;
@@ -57,35 +26,56 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     }
 
     public void RobotInit() {
-        // Configure arm motor using Phoenix 6 API
-        TalonFXConfiguration armConfig = new TalonFXConfiguration();
+        // Configure arm motor using Phoenix 5 API
+        armMotor.configFactoryDefault();
+        armMotor.setNeutralMode(NeutralMode.Brake);
         
-        Slot0Configs slot0 = armConfig.Slot0;
-        slot0.kP = m_networkTables.getDoubleValue(ConstantId.ArmMotorProportionalGainValue);
-        slot0.kI = m_networkTables.getDoubleValue(ConstantId.ArmMotorIntegralGainValue);
-        slot0.kD = m_networkTables.getDoubleValue(ConstantId.ArmMotorDerivativeGainValue);
-        slot0.kS = m_networkTables.getDoubleValue(ConstantId.ArmMotorFeedForwardGainValue);
+        // Configure PID for arm motor
+        armMotor.config_kP(0, m_networkTables.getDoubleValue(ConstantId.ArmMotorProportionalGainValue));
+        armMotor.config_kI(0, m_networkTables.getDoubleValue(ConstantId.ArmMotorIntegralGainValue));
+        armMotor.config_kD(0, m_networkTables.getDoubleValue(ConstantId.ArmMotorDerivativeGainValue));
+        armMotor.config_kF(0, m_networkTables.getDoubleValue(ConstantId.ArmMotorFeedForwardGainValue));
         
-        MotorOutputConfigs motorOutput = armConfig.MotorOutput;
-        motorOutput.NeutralMode = NeutralModeValue.Brake;
+        // Configure motion magic
+        armMotor.configMotionCruiseVelocity(
+            m_networkTables.getDoubleValue(ConstantId.ArmMotorMagicMotionCruiseVelocity)
+        );
+        armMotor.configMotionAcceleration(
+            m_networkTables.getDoubleValue(ConstantId.ArmMotorMagicMotionAccelerationVelocity)
+        );
         
-        armMotor.getConfigurator().apply(armConfig);
-        armMotor.setPosition(m_networkTables.getDoubleValue(ConstantId.ArmSelectedSensorPosition));
+        // Configure output limits
+        armMotor.configNominalOutputForward(
+            m_networkTables.getDoubleValue(ConstantId.ArmMotorForwardNominalPercentOutput)
+        );
+        armMotor.configNominalOutputReverse(
+            m_networkTables.getDoubleValue(ConstantId.ArmMotorReverseNominalPercentOutput)
+        );
+        armMotor.configPeakOutputForward(
+            m_networkTables.getDoubleValue(ConstantId.ArmMotorForwardPeakPercentOutput)
+        );
+        armMotor.configPeakOutputReverse(
+            m_networkTables.getDoubleValue(ConstantId.ArmMotorReversePeakPercentOutput)
+        );
+        
+        // Set initial position
+        armMotor.setSelectedSensorPosition(
+            m_networkTables.getDoubleValue(ConstantId.ArmSelectedSensorPosition)
+        );
         
         // Configure roller motor
-        TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
-        rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        rollerMotor.getConfigurator().apply(rollerConfig);
+        rollerMotor.configFactoryDefault();
+        rollerMotor.setNeutralMode(NeutralMode.Brake);
     }
 
     public void TeleopInit() {}
 
     public void ResetDefaultPosition() {
         System.out.println("Resetting position");
-        armMotor.setPosition(0);
-        armMotor.setControl(armPositionControl.withPosition(
+        armMotor.setSelectedSensorPosition(0);
+        armMotor.set(ControlMode.MotionMagic, 
             m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
-        ));
+        );
     }
 
     public Command ResetEncoderPositionCommand() {
@@ -94,65 +84,87 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
 
     public void AutonomousInit() {
         ResetDefaultPosition();
-        rollerMotor.setControl(rollerVoltageControl.withOutput(0));
-        armMotor.setControl(armPositionControl.withPosition(
+        rollerMotor.set(ControlMode.PercentOutput, 0);
+        armMotor.set(ControlMode.MotionMagic, 
             m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
-        ));
+        );
     }
 
     public void PrintPosition() {
-        System.out.println("Position: " + armMotor.getPosition().getValue());
+        System.out.println("Position: " + armMotor.getSelectedSensorPosition());
     }
 
     public Command AlgaeIntakePressed() {
-        return Commands.runOnce(() -> {
-            System.out.println("============ AlgaeIntakePressed");
-            armMotor.setControl(armPositionControl.withPosition(
-                m_networkTables.getDoubleValue(ConstantId.ArmIntakePosition)
-            ));
-            Commands.waitSeconds(m_networkTables.getTimeValue(ConstantId.AlgaeIntakeSequenceWait).in(Units.Seconds));
-            rollerMotor.setControl(rollerVoltageControl.withOutput(
-                m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeIntakeVelocity) * 12.0
-            ));
-        });
+        return Commands.sequence(
+            Commands.runOnce(() -> {
+                System.out.println("============ AlgaeIntakePressed");
+                System.out.println("lowering arm");
+                System.out.println("Position1: " + armMotor.getSelectedSensorPosition());
+                
+                armMotor.set(ControlMode.MotionMagic,
+                    m_networkTables.getDoubleValue(ConstantId.ArmIntakePosition)
+                );
+            }),
+            Commands.waitSeconds(
+                m_networkTables.getTimeValue(ConstantId.AlgaeIntakeSequenceWait).in(Units.Seconds)
+            ),
+            Commands.runOnce(() -> {
+                System.out.println("stopping the lowering of arm");
+                System.out.println("Position2: " + armMotor.getSelectedSensorPosition());
+                
+                rollerMotor.set(ControlMode.PercentOutput,
+                    m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeIntakeVelocity)
+                );
+            })
+        );
     }
 
     public Command AlgaeIntakeReleased() {
-        return Commands.runOnce(() -> {
-            System.out.println("============ AlgaeIntakeReleased");
-            armMotor.setControl(armPositionControl.withPosition(
-                m_networkTables.getDoubleValue(ConstantId.ArmHoldPosition)
-            ));
-            Commands.waitSeconds(m_networkTables.getTimeValue(ConstantId.AlgaeIntakeSequenceWait).in(Units.Seconds));
-            rollerMotor.setControl(rollerVoltageControl.withOutput(0));
-        });
+        return Commands.sequence(
+            Commands.runOnce(() -> {
+                System.out.println("============ AlgaeIntakeReleased");
+                armMotor.set(ControlMode.MotionMagic,
+                    m_networkTables.getDoubleValue(ConstantId.ArmHoldPosition)
+                );
+            }),
+            Commands.waitSeconds(
+                m_networkTables.getTimeValue(ConstantId.AlgaeIntakeSequenceWait).in(Units.Seconds)
+            ),
+            Commands.runOnce(() -> {
+                rollerMotor.set(ControlMode.PercentOutput, 0);
+            })
+        );
     }
 
     public Command ArmUpPressed() {
         return Commands.runOnce(() -> {
             System.out.println("============ ArmUpPressed");
-            armMotor.set(m_networkTables.getDoubleValue(ConstantId.ArmUpVelocity));
+            armMotor.set(ControlMode.PercentOutput, 
+                m_networkTables.getDoubleValue(ConstantId.ArmUpVelocity)
+            );
         });
     }
 
     public Command ArmUpReleased() {
         return Commands.runOnce(() -> {
             System.out.println("============ Arm stopped");
-            armMotor.set(0);
+            armMotor.set(ControlMode.PercentOutput, 0);
         });
     }
 
     public Command ArmDownPressed() {
         return Commands.runOnce(() -> {
             System.out.println("=========== ArmDownPressed");
-            armMotor.set(m_networkTables.getDoubleValue(ConstantId.ArmDownVelocity));
+            armMotor.set(ControlMode.PercentOutput, 
+                m_networkTables.getDoubleValue(ConstantId.ArmDownVelocity)
+            );
         });
     }
 
     public Command ArmDownReleased() {
         return Commands.runOnce(() -> {
             System.out.println("============ Arm stopped");
-            armMotor.set(0);
+            armMotor.set(ControlMode.PercentOutput, 0);
         });
     }
 
@@ -166,71 +178,80 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command AlgaeEjectPressed() {
         return Commands.runOnce(() -> {
             System.out.println("============= AlgaeEjectPressed");
-            rollerMotor.setControl(rollerVoltageControl.withOutput(
-                m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeEjectVelocity)));
+            rollerMotor.set(ControlMode.PercentOutput,
+                m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeEjectVelocity)
+            );
         });
     }
 
     public Command AlgaeEjectReleased() {
         return Commands.runOnce(() -> {
             System.out.println("========== AlgaeEjectReleased");
-            armMotor.setControl(armPositionControl.withPosition(
-                m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)));
-            rollerMotor.setControl(rollerVoltageControl.withOutput(0));
+            armMotor.set(ControlMode.MotionMagic,
+                m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
+            );
+            rollerMotor.set(ControlMode.PercentOutput, 0);
         });
     }
 
     public Command CoralEjectPressed() {
-        return Commands.runOnce(() -> {
-            System.out.println("============ CoralEjectPressed");
-            armMotor.setControl(armPositionControl.withPosition(
-                m_networkTables.getDoubleValue(ConstantId.ArmCoralEjectPosition)
-            ));
-            Commands.waitSeconds(m_networkTables.getTimeValue(ConstantId.ArmCoralEjectSequenceWait).in(Units.Seconds));
-            rollerMotor.setControl(rollerVoltageControl.withOutput(
-                m_networkTables.getDoubleValue(ConstantId.RollerMovementCoralEjectVelocity) * 12.0
-            ));
-        });
+        return Commands.sequence(
+            Commands.runOnce(() -> {
+                System.out.println("============ CoralEjectPressed");
+                armMotor.set(ControlMode.MotionMagic,
+                    m_networkTables.getDoubleValue(ConstantId.ArmCoralEjectPosition)
+                );
+            }),
+            Commands.waitSeconds(
+                m_networkTables.getTimeValue(ConstantId.ArmCoralEjectSequenceWait).in(Units.Seconds)
+            ),
+            Commands.runOnce(() -> {
+                rollerMotor.set(ControlMode.PercentOutput,
+                    m_networkTables.getDoubleValue(ConstantId.RollerMovementCoralEjectVelocity)
+                );
+            })
+        );
     }
 
     public Command CoralEjectReleased() {
         return Commands.runOnce(() -> {
             System.out.println("============ CoralEjectReleased");
-            armMotor.setControl(armPositionControl.withPosition(
+            armMotor.set(ControlMode.MotionMagic,
                 m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
-            ));
-            rollerMotor.setControl(rollerVoltageControl.withOutput(0));
+            );
+            rollerMotor.set(ControlMode.PercentOutput, 0);
         });
     }
 
-    public Command RollerForwardPressed(){
+    public Command RollerForwardPressed() {
         return Commands.runOnce(() -> {
             System.out.println("============ Rollers Forward");
-            rollerMotor.setControl(rollerVoltageControl.withOutput(
-                m_networkTables.getDoubleValue(ConstantId.RollerMovementForwardVelocity) * 12.0));
+            rollerMotor.set(ControlMode.PercentOutput,
+                m_networkTables.getDoubleValue(ConstantId.RollerMovementForwardVelocity)
+            );
         });
-        }
+    }
     
-    public Command RollerForwardReleased(){
+    public Command RollerForwardReleased() {
         return Commands.runOnce(() -> {
             System.out.println("============ Rollers Stopped");
-            rollerMotor.setControl(rollerVoltageControl.withOutput(0));
+            rollerMotor.set(ControlMode.PercentOutput, 0);
         });
-        }
+    }
     
-    public Command RollerBackwardPressed(){
+    public Command RollerBackwardPressed() {
         return Commands.runOnce(() -> {
             System.out.println("=========== Rollers Backward");
-            rollerMotor.setControl(rollerVoltageControl.withOutput(
+            rollerMotor.set(ControlMode.PercentOutput,
                 m_networkTables.getDoubleValue(ConstantId.RollerMovementBackwardVelocity)
-            ));
+            );
         });
     }
 
-    public Command RollerBackwardReleased(){
+    public Command RollerBackwardReleased() {
         return Commands.runOnce(() -> {
             System.out.println("============ Rollers Stopped");
-            rollerMotor.setControl(rollerVoltageControl.withOutput(0));
+            rollerMotor.set(ControlMode.PercentOutput, 0);
         });
-        }
+    }
 }
