@@ -197,17 +197,17 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command CoralEjectPressed() {
         return Commands.sequence(
             Commands.runOnce(() -> {
-                System.out.println("============ CoralEjectPressed");
-                armMotor.set(ControlMode.MotionMagic,
-                    m_networkTables.getDoubleValue(ConstantId.ArmCoralEjectPosition)
+                System.out.println("============ CoralEjectPressed\nmoving rollers forward//\n");
+                rollerMotor.set(ControlMode.MotionMagic,
+                    m_networkTables.getDoubleValue(ConstantId.RollerMovementCoralEjectVelocity)
                 );
             }),
             Commands.waitSeconds(
                 m_networkTables.getTimeValue(ConstantId.ArmCoralEjectSequenceWait).in(Units.Seconds)
             ),
             Commands.runOnce(() -> {
-                rollerMotor.set(ControlMode.PercentOutput,
-                    m_networkTables.getDoubleValue(ConstantId.RollerMovementCoralEjectVelocity)
+                armMotor.set(ControlMode.PercentOutput,
+                    m_networkTables.getDoubleValue(ConstantId.ArmCoralEjectPosition)
                 );
             })
         );
