@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AutoCommands;
@@ -44,7 +45,7 @@ public class RobotContainer extends TimedRobot {
     private final Telemetry logger = new Telemetry(MAX_SPEED);
 
     private final CommandXboxController controller = new CommandXboxController(0);
-    private final CommandXboxController buttonBoard = new CommandXboxController(1);
+    private final CommandJoystick buttonBoard = new CommandJoystick(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -165,7 +166,7 @@ public class RobotContainer extends TimedRobot {
             .onTrue(superstructure.AlgaeEjectPressed())
             .onFalse(superstructure.AlgaeEjectReleased()));
 
-        buttonBoard.povUp().onTrue(superstructure.CoralEjectPressed()).onFalse(superstructure.CoralEjectReleased());
+        new Trigger(buttonBoard.povUp().onTrue(superstructure.CoralEjectPressed()).onFalse(superstructure.CoralEjectReleased()));
 
         new Trigger(DriverStation::isEnabled).onTrue(climber.ClimbReleased()); //working
 

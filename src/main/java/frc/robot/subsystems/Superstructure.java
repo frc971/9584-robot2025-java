@@ -21,7 +21,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     private final CommandSwerveDrivetrain m_robotDrivetrain;
 
     private final TalonFX armMotor = new TalonFX(16);
-    private final TalonFX rollerMotor = new TalonFX(17); // Added missing roller motor
+    private final TalonFX rollerMotor = new TalonFX(18); // Added missing roller motor
 
     private final PositionVoltage armPositionControl = new PositionVoltage(0);
     private final VoltageOut rollerVoltageControl = new VoltageOut(0);
