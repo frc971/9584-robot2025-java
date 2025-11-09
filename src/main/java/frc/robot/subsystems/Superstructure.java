@@ -142,7 +142,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command ArmUpPressed() {
         return Commands.runOnce(() -> {
             System.out.println("============ ArmUpPressed");
-            armMotor.set(ControlMode.PercentOutput, 
+            armMotor.set(TalonSRXControlMode.PercentOutput, 
                 m_networkTables.getDoubleValue(ConstantId.ArmUpVelocity)
             );
         });
@@ -151,14 +151,14 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command ArmUpReleased() {
         return Commands.runOnce(() -> {
             System.out.println("============ Arm stopped");
-            armMotor.set(ControlMode.PercentOutput, 0);
+            armMotor.set(TalonSRXControlMode.PercentOutput, 0);
         });
     }
 
     public Command ArmDownPressed() {
         return Commands.runOnce(() -> {
             System.out.println("=========== ArmDownPressed");
-            armMotor.set(ControlMode.PercentOutput, 
+            armMotor.set(TalonSRXControlMode.PercentOutput, 
                 m_networkTables.getDoubleValue(ConstantId.ArmDownVelocity)
             );
         });
@@ -167,7 +167,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command ArmDownReleased() {
         return Commands.runOnce(() -> {
             System.out.println("============ Arm stopped");
-            armMotor.set(ControlMode.PercentOutput, 0);
+            armMotor.set(TalonSRXControlMode.PercentOutput, 0);
         });
     }
 
