@@ -76,7 +76,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public void ResetDefaultPosition() {
         System.out.println("Resetting position");
         armMotor.setSelectedSensorPosition(0);
-        armMotor.set(ControlMode.MotionMagic, 
+        armMotor.set(TalonSRXControlMode.MotionMagic, 
             m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
         );
     }
@@ -87,8 +87,8 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
 
     public void AutonomousInit() {
         ResetDefaultPosition();
-        rollerMotor.set(ControlMode.PercentOutput, 0);
-        armMotor.set(ControlMode.MotionMagic, 
+        rollerMotor.set(VictorSPXControlMode.PercentOutput, 0);
+        armMotor.set(TalonSRXControlMode.MotionMagic, 
             m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
         );
     }
