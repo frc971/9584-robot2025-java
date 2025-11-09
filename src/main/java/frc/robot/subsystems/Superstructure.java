@@ -260,7 +260,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command RollerBackwardPressed() {
         return Commands.runOnce(() -> {
             System.out.println("=========== Rollers Backward");
-            rollerMotor.set(ControlMode.PercentOutput,
+            rollerMotor.set(VictorSPXControlMode.PercentOutput,
                 m_networkTables.getDoubleValue(ConstantId.RollerMovementBackwardVelocity)
             );
         });
