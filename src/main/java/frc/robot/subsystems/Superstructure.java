@@ -181,7 +181,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command AlgaeEjectPressed() {
         return Commands.runOnce(() -> {
             System.out.println("============= AlgaeEjectPressed");
-            rollerMotor.set(ControlMode.PercentOutput,
+            rollerMotor.set(VictorSPXControlMode.PercentOutput,
                 m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeEjectVelocity)
             );
         });
@@ -190,7 +190,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command AlgaeEjectReleased() {
         return Commands.runOnce(() -> {
             System.out.println("========== AlgaeEjectReleased");
-            armMotor.set(ControlMode.MotionMagic,
+            armMotor.set(TalonSRXControlMode.MotionMagic,
                 m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
             );
             rollerMotor.set(ControlMode.PercentOutput, 0);
