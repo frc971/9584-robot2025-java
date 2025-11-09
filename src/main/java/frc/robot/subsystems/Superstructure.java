@@ -155,7 +155,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command ArmUpReleased() {
         return Commands.runOnce(() -> {
             System.out.println("============ Arm stopped");
-            armMotor.set(TalonSRXControlMode.PercentOutput, 0);
+            armMotor.set(ControlMode.Position, armMotor.getSelectedSensorPosition(0));
         });
     }
 
