@@ -194,7 +194,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command AlgaeEjectReleased() {
         return Commands.runOnce(() -> {
             System.out.println("========== AlgaeEjectReleased");
-            armMotor.set(TalonSRXControlMode.MotionMagic,
+            armMotor.set(TalonSRXControlMode.Position,
                 m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
             );
             rollerMotor.set(VictorSPXControlMode.PercentOutput, 0);
