@@ -104,7 +104,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
                 System.out.println("lowering arm");
                 System.out.println("Position1: " + armMotor.getSelectedSensorPosition());
                 
-                armMotor.set(ControlMode.MotionMagic,
+                armMotor.set(TalonSRXControlMode.MotionMagic,
                     m_networkTables.getDoubleValue(ConstantId.ArmIntakePosition)
                 );
             }),
@@ -115,7 +115,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
                 System.out.println("stopping the lowering of arm");
                 System.out.println("Position2: " + armMotor.getSelectedSensorPosition());
                 
-                rollerMotor.set(ControlMode.PercentOutput,
+                rollerMotor.set(VictorSPXControlMode.PercentOutput,
                     m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeIntakeVelocity)
                 );
             })
@@ -126,7 +126,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
         return Commands.sequence(
             Commands.runOnce(() -> {
                 System.out.println("============ AlgaeIntakeReleased");
-                armMotor.set(ControlMode.MotionMagic,
+                armMotor.set(TalonSRXControlMode.MotionMagic,
                     m_networkTables.getDoubleValue(ConstantId.ArmHoldPosition)
                 );
             }),
@@ -134,7 +134,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
                 m_networkTables.getTimeValue(ConstantId.AlgaeIntakeSequenceWait).in(Units.Seconds)
             ),
             Commands.runOnce(() -> {
-                rollerMotor.set(ControlMode.PercentOutput, 0);
+                rollerMotor.set(VictorSPXControlMode.PercentOutput, 0);
             })
         );
     }
