@@ -359,7 +359,7 @@ public class NetworkTables {
                 {
                     networkTableKey = "AutoEjectCoralWait";
                     type = ConstantType.Time;
-                    defaultValue.doubleValue = 0.5;
+                    defaultValue.doubleValue = 0.3;
                 }
             });
             add(new ConstantEntry() {
@@ -373,7 +373,7 @@ public class NetworkTables {
                 {
                     networkTableKey = "ArmCoralEjectSequenceWait";
                     type = ConstantType.Time;
-                    defaultValue.doubleValue = 1.0;
+                    defaultValue.doubleValue = 0.3;
                 }
             });
             add(new ConstantEntry() {
