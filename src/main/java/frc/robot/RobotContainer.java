@@ -62,13 +62,12 @@ public class RobotContainer extends TimedRobot {
     private final SlewRateLimiter robotRotateSlewFilter = new SlewRateLimiter(networkTables.getAngularAccelerationValue(NetworkTables.ConstantId.SlewRotateLimit).in(RadiansPerSecondPerSecond));
 
     // Register autonomous commands for PathPlanner
-    public AutoCommands auto = new AutoCommands(superstructure,networkTables);
 
     public RobotContainer() {
-        NamedCommands.registerCommand("Eject Coral",  auto.EjectCoral());
-        NamedCommands.registerCommand("Intake Coral", auto.IntakeCoral());
-        NamedCommands.registerCommand("Eject Algae",  auto.EjectAlgae());
-        NamedCommands.registerCommand("Intake Algae", auto.IntakeAlgae());
+        NamedCommands.registerCommand("Eject Coral",  autoCommands.EjectCoral());
+        NamedCommands.registerCommand("Intake Coral", autoCommands.IntakeCoral());
+        NamedCommands.registerCommand("Eject Algae",  autoCommands.EjectAlgae());
+        NamedCommands.registerCommand("Intake Algae", autoCommands.IntakeAlgae());
 
         SmartDashboard.putData("Auto Mode", autoChooser);
         SmartDashboard.putData("Restore Defaults", Commands.runOnce(networkTables::RestoreDefaults));
