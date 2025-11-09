@@ -193,7 +193,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
             armMotor.set(TalonSRXControlMode.MotionMagic,
                 m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
             );
-            rollerMotor.set(ControlMode.PercentOutput, 0);
+            rollerMotor.set(VictorSPXControlMode.PercentOutput, 0);
         });
     }
 
