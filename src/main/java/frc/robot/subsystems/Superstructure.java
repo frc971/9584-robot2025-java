@@ -162,7 +162,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command ArmDownPressed() {
         return Commands.runOnce(() -> {
             System.out.println("=========== ArmDownPressed");
-            armMotor.set(TalonSRXControlMode.PercentOutput, 
+            armMotor.set(ControlMode.PercentOutput, 
                 m_networkTables.getDoubleValue(ConstantId.ArmDownVelocity)
             );
         });
