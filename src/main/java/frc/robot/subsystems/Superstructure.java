@@ -235,10 +235,9 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command CoralEjectReleased() {
         return Commands.runOnce(() -> {
             System.out.println("============ CoralEjectReleased");
-            armMotor.set(ControlMode.MotionMagic,
+            armMotor.set(TalonSRXControlMode.Position,
                 m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
             );
-            rollerMotor.set(ControlMode.PercentOutput, 0);
         });
     }
 
