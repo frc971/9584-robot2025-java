@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.FollowPathCommand;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -52,7 +53,7 @@ public class RobotContainer extends TimedRobot {
     private final Superstructure superstructure = new Superstructure(networkTables, drivetrain);
     private final AutoCommands autoCommands = new AutoCommands(superstructure, networkTables);
 
-    private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("Tests");
+    private final SendableChooser<Command> autoChooser;
 
     private final SlewRateLimiter fieldXSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
     private final SlewRateLimiter fieldYSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
@@ -64,15 +65,16 @@ public class RobotContainer extends TimedRobot {
     // Register autonomous commands for PathPlanner
 
     public RobotContainer() {
-        NamedCommands.registerCommand("Eject Coral",  autoCommands.EjectCoral());
-        NamedCommands.registerCommand("Intake Coral", autoCommands.IntakeCoral());
-        NamedCommands.registerCommand("Eject Algae",  autoCommands.EjectAlgae());
-        NamedCommands.registerCommand("Intake Algae", autoCommands.IntakeAlgae());
+        NamedCommands.registerCommand("Eject Coral", superstructure.AutoCoral());
 
+        autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
         SmartDashboard.putData("Restore Defaults", Commands.runOnce(networkTables::RestoreDefaults));
 
         configureBindings();
+
+        // Warmup PathPlanner to avoid Java pauses
+        FollowPathCommand.warmupCommand().schedule();
     }
 
     public void robotInit() {
