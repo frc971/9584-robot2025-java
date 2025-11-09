@@ -74,8 +74,8 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
 
     public void ResetDefaultPosition() {
         System.out.println("Resetting position");
-        armMotor.setSelectedSensorPosition(0);
-        armMotor.set(TalonSRXControlMode.MotionMagic, 
+        armMotor.setSelectedSensorPosition(0,0,10);
+        armMotor.set(ControlMode.Position, 
             m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
         );
     }
