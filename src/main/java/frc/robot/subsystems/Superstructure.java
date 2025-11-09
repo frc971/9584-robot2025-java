@@ -87,7 +87,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public void AutonomousInit() {
         ResetDefaultPosition();
         rollerMotor.set(VictorSPXControlMode.PercentOutput, 0);
-        armMotor.set(TalonSRXControlMode.MotionMagic, 
+        armMotor.set(ControlMode.Position, 
             m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
         );
     }
