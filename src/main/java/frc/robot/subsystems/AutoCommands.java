@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.NetworkTables;
 
 public class AutoCommands {
-    private final Superstructure superstructure;
-    private final NetworkTables networkTables;
+    private static Superstructure superstructure;
+    private static NetworkTables networkTables;
 
     public AutoCommands(Superstructure superstructure, NetworkTables networkTables) {
         this.superstructure = superstructure;
