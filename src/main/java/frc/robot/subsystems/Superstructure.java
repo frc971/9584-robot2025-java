@@ -11,7 +11,6 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.NetworkTables;
 import frc.robot.NetworkTables.ConstantId;
 
@@ -126,7 +125,9 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
         return Commands.sequence(
             Commands.runOnce(() -> {
                 System.out.println("============ AlgaeIntakeReleased");
-                armMotor.set(TalonSRXControlMode.MotionMagic,
+                System.out.println("Position3:" + armMotor.getSelectedSensorPosition());
+
+                armMotor.set(ControlMode.Position,
                     m_networkTables.getDoubleValue(ConstantId.ArmHoldPosition)
                 );
             }),
@@ -134,7 +135,10 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
                 m_networkTables.getTimeValue(ConstantId.AlgaeIntakeSequenceWait).in(Units.Seconds)
             ),
             Commands.runOnce(() -> {
-                rollerMotor.set(VictorSPXControlMode.PercentOutput, 0);
+                System.out.println("============ AlgaeIntakeReleased");
+                System.out.println("Position4:" + armMotor.getSelectedSensorPosition(0));
+                rollerMotor.set(VictorSPXControlMode.PercentOutput,
+                    m_networkTables.getDoubleValue(ConstantId.RollerMovementHoldVelocity));
             })
         );
     }
