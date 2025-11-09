@@ -12,6 +12,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -38,6 +40,8 @@ public class Telemetry {
     private final DoublePublisher driveOdometryFrequency;
     private final StringPublisher fieldTypePub;
     private final DoubleArrayPublisher fieldPub;
+    private final Field2d field = new Field2d();
+    private final FieldObject2d robotPose = field.getObject("RobotPose");
 
     private final Mechanism2d[] m_moduleMechanisms = new Mechanism2d[4];
     private final MechanismLigament2d[] m_moduleSpeeds = new MechanismLigament2d[4];
@@ -74,6 +78,7 @@ public class Telemetry {
     }
 
     public void telemeterize(SwerveDriveState state) {
+        /* Telemeterize the swerve drive state */
         drivePose.set(state.Pose);
         driveSpeeds.set(state.Speeds);
         driveModuleStates.set(state.ModuleStates);
@@ -81,15 +86,30 @@ public class Telemetry {
         driveModulePositions.set(state.ModulePositions);
         driveTimestamp.set(state.Timestamp);
         driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
-
+    
+        /* Also write to log file */
         poseArray[0] = state.Pose.getX();
         poseArray[1] = state.Pose.getY();
         poseArray[2] = state.Pose.getRotation().getDegrees();
-        
+    
+        for (int i = 0; i < 4; ++i) {
+          moduleStatesArray[i * 2 + 0] = state.ModuleStates[i].angle.getRadians();
+          moduleStatesArray[i * 2 + 1] = state.ModuleStates[i].speedMetersPerSecond;
+          moduleTargetsArray[i * 2 + 0] = state.ModuleTargets[i].angle.getRadians();
+          moduleTargetsArray[i * 2 + 1] = state.ModuleTargets[i].speedMetersPerSecond;
+        }
+    
         SignalLogger.writeDoubleArray("DriveState/Pose", poseArray);
-
+        SignalLogger.writeDoubleArray("DriveState/ModuleStates", moduleStatesArray);
+        SignalLogger.writeDoubleArray("DriveState/ModuleTargets", moduleTargetsArray);
+        SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
+    
+        /* Telemeterize the pose to a Field2d */
+        robotPose.setPose(state.Pose);
         fieldTypePub.set("Field2d");
         fieldPub.set(poseArray);
+    
+        /* Telemeterize the module states to a Mechanism2d */
 
         for (int i = 0; i < 4; i++) {
             m_moduleSpeeds[i].setAngle(state.ModuleStates[i].angle.getDegrees());

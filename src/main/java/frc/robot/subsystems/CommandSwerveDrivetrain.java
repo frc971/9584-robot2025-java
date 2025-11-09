@@ -21,8 +21,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
-public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
+public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem  {
     private static final double kSimLoopPeriod = 0.005;
     private Notifier m_simNotifier = null;
     private static double m_lastSimTime;
@@ -37,13 +38,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public CommandSwerveDrivetrain(
         SwerveDrivetrainConstants drivetrainConstants, 
             SwerveModuleConstants<?, ?, ?>... modules) {
-            super(
-                (deviceId, canbus) -> new TalonFX(deviceId, canbus), // driveMotorConstructor
-                (deviceId, canbus) -> new TalonFX(deviceId, canbus), // steerMotorConstructor
-                (deviceId, canbus) -> new CANcoder(deviceId, canbus), // steerEncoderConstructor
-                drivetrainConstants,
-                modules
-            );
+            super(drivetrainConstants, modules);
         
         configureAutoBuilder();
         if (Utils.isSimulation()) {
