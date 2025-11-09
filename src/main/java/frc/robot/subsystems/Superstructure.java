@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
@@ -9,6 +11,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.NetworkTables;
 import frc.robot.NetworkTables.ConstantId;
 
@@ -194,23 +197,35 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
         });
     }
 
+    //fixed
     public Command CoralEjectPressed() {
         return Commands.sequence(
             Commands.runOnce(() -> {
                 System.out.println("============ CoralEjectPressed\nmoving rollers forward//\n");
-                rollerMotor.set(ControlMode.MotionMagic,
+                armMotor.set(TalonSRXControlMode.Position,
+                    m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
+                );
+                rollerMotor.set(VictorSPXControlMode.PercentOutput,
                     m_networkTables.getDoubleValue(ConstantId.RollerMovementCoralEjectVelocity)
                 );
+            }),
+            Commands.waitSeconds(0.2),
+            Commands.runOnce(() -> {
+                System.out.println("lower arm");
+                rollerMotor.set(VictorSPXControlMode.PercentOutput,0);
             }),
             Commands.waitSeconds(
                 m_networkTables.getTimeValue(ConstantId.ArmCoralEjectSequenceWait).in(Units.Seconds)
             ),
             Commands.runOnce(() -> {
-                armMotor.set(ControlMode.PercentOutput,
+                System.out.println("lower arm");
+                armMotor.set(ControlMode.Position,
                     m_networkTables.getDoubleValue(ConstantId.ArmCoralEjectPosition)
                 );
             })
-        );
+        )
+        .finallyDo(() -> {System.out.println("=== CoralEjectPressed FINALLY: stopping all motors ===");
+        rollerMotor.set(VictorSPXControlMode.PercentOutput, 0);});
     }
 
     public Command CoralEjectReleased() {

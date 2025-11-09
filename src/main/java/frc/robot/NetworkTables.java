@@ -290,7 +290,7 @@ public class NetworkTables {
         add(new ConstantEntry() {{
             networkTableKey = "ArmCoralEjectSequenceWait";
             type = ConstantType.Time;
-            defaultValue.doubleValue = 0.3; 
+            defaultValue.doubleValue = 1.0; 
         }});
         add(new ConstantEntry() {{
             networkTableKey = "ClimbButton";
