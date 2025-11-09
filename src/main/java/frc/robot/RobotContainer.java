@@ -5,10 +5,10 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 
-import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.FollowPathCommand;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,8 +19,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AutoCommands;
@@ -53,7 +53,7 @@ public class RobotContainer extends TimedRobot {
     private final Superstructure superstructure = new Superstructure(networkTables, drivetrain);
     private final AutoCommands autoCommands = new AutoCommands(superstructure, networkTables);
 
-    private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("Tests");
+    private final SendableChooser<Command> autoChooser;
 
     private final SlewRateLimiter fieldXSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
     private final SlewRateLimiter fieldYSlewFilter = new SlewRateLimiter(networkTables.getAccelerationValue(NetworkTables.ConstantId.SlewTranslateLimit).in(MetersPerSecondPerSecond));
@@ -63,18 +63,18 @@ public class RobotContainer extends TimedRobot {
     private final SlewRateLimiter robotRotateSlewFilter = new SlewRateLimiter(networkTables.getAngularAccelerationValue(NetworkTables.ConstantId.SlewRotateLimit).in(RadiansPerSecondPerSecond));
 
     // Register autonomous commands for PathPlanner
-    static {
-        NamedCommands.registerCommand("Eject Coral",  Commands.runOnce(() -> System.out.println("Eject Coral")));
-        NamedCommands.registerCommand("Intake Coral", Commands.runOnce(() -> System.out.println("Intake Coral")));
-        NamedCommands.registerCommand("Eject Algae",  Commands.runOnce(() -> System.out.println("Eject Algae")));
-        NamedCommands.registerCommand("Intake Algae", Commands.runOnce(() -> System.out.println("Intake Algae")));
-    }
-    
+
     public RobotContainer() {
+        NamedCommands.registerCommand("Eject Coral", superstructure.AutoCoral());
+
+        autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
         SmartDashboard.putData("Restore Defaults", Commands.runOnce(networkTables::RestoreDefaults));
 
         configureBindings();
+
+        // Warmup PathPlanner to avoid Java pauses
+        FollowPathCommand.warmupCommand().schedule();
     }
 
     public void robotInit() {

@@ -96,6 +96,41 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
         System.out.println("Position: " + armMotor.getSelectedSensorPosition());
     }
 
+    public Command AutoCoral() {
+        return Commands.sequence(
+            Commands.runOnce(() -> {
+                System.out.println("============ CoralEjectPressed\nmoving rollers forward//\n");
+                armMotor.set(TalonSRXControlMode.Position,
+                    m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
+                );
+                rollerMotor.set(VictorSPXControlMode.PercentOutput,
+                    m_networkTables.getDoubleValue(ConstantId.RollerMovementCoralEjectVelocity)
+                );
+            }),
+            Commands.waitSeconds(0.2),
+            Commands.runOnce(() -> {
+                System.out.println("stop roller");
+                rollerMotor.set(VictorSPXControlMode.PercentOutput,0);
+            }),
+            Commands.waitSeconds(
+                m_networkTables.getTimeValue(ConstantId.ArmCoralEjectSequenceWait).in(Units.Seconds)
+            ),
+            Commands.runOnce(() -> {
+                System.out.println("lower arm");
+                armMotor.set(ControlMode.Position,
+                    m_networkTables.getDoubleValue(ConstantId.ArmCoralEjectPosition)
+                );
+            }),
+            Commands.waitSeconds(0.5),
+            Commands.runOnce(() -> {
+                rollerMotor.set(VictorSPXControlMode.PercentOutput, 0);
+                armMotor.set(ControlMode.Position, 
+                    m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
+                );
+            })
+        );
+    }
+
     public Command AlgaeIntakePressed() {
         return Commands.sequence(
             Commands.runOnce(() -> {
@@ -214,7 +249,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
                     m_networkTables.getDoubleValue(ConstantId.RollerMovementCoralEjectVelocity)
                 );
             }),
-            Commands.waitSeconds(0.15),
+            Commands.waitSeconds(0.2),
             Commands.runOnce(() -> {
                 System.out.println("stop roller");
                 rollerMotor.set(VictorSPXControlMode.PercentOutput,0);
