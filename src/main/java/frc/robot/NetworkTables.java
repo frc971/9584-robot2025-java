@@ -359,7 +359,7 @@ public class NetworkTables {
                 {
                     networkTableKey = "AutoEjectCoralWait";
                     type = ConstantType.Time;
-                    defaultValue.doubleValue = 0.3;
+                    defaultValue.doubleValue = 0.5;
                 }
             });
             add(new ConstantEntry() {

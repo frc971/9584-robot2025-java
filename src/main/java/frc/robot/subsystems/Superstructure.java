@@ -214,7 +214,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
                     m_networkTables.getDoubleValue(ConstantId.RollerMovementCoralEjectVelocity)
                 );
             }),
-            Commands.waitSeconds(0.15),
+            Commands.waitSeconds(0.2),
             Commands.runOnce(() -> {
                 System.out.println("stop roller");
                 rollerMotor.set(VictorSPXControlMode.PercentOutput,0);
