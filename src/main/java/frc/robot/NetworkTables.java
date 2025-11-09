@@ -373,7 +373,7 @@ public class NetworkTables {
                 {
                     networkTableKey = "ArmCoralEjectSequenceWait";
                     type = ConstantType.Time;
-                    defaultValue.doubleValue = 0.3;
+                    defaultValue.doubleValue = 0.1;
                 }
             });
             add(new ConstantEntry() {

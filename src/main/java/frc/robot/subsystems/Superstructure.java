@@ -146,7 +146,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command ArmUpPressed() {
         return Commands.runOnce(() -> {
             System.out.println("============ ArmUpPressed");
-            armMotor.set(ControlMode.Position, 
+            armMotor.set(ControlMode.PercentOutput, 
                 m_networkTables.getDoubleValue(ConstantId.ArmUpVelocity)
             );
         });
@@ -155,7 +155,8 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command ArmUpReleased() {
         return Commands.runOnce(() -> {
             System.out.println("============ Arm stopped");
-            armMotor.set(ControlMode.Position, armMotor.getSelectedSensorPosition(0));
+            armMotor.set(ControlMode.Position,
+                armMotor.getSelectedSensorPosition(0));
         });
     }
 
@@ -213,9 +214,9 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
                     m_networkTables.getDoubleValue(ConstantId.RollerMovementCoralEjectVelocity)
                 );
             }),
-            Commands.waitSeconds(0.2),
+            Commands.waitSeconds(0.15),
             Commands.runOnce(() -> {
-                System.out.println("lower arm");
+                System.out.println("stop roller");
                 rollerMotor.set(VictorSPXControlMode.PercentOutput,0);
             }),
             Commands.waitSeconds(
