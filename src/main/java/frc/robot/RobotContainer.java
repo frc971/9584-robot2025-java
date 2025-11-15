@@ -23,10 +23,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.AutoCommands;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.AutoCommands.AutoCommands;
+import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Superstructure;
+import frc.robot.Superstructure;
+import frc.robot.NetworkTables;
 
 public class RobotContainer extends TimedRobot {
     private final NetworkTables networkTables = new NetworkTables();
