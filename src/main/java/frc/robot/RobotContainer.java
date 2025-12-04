@@ -44,8 +44,9 @@ public class RobotContainer extends TimedRobot {
       TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
 
     private final Telemetry logger = new Telemetry(MAX_SPEED);
-
+    
     private final CommandXboxController controller = new CommandXboxController(0);
+    private final CommandJoystick simController = new CommandJoystick(0);
     private final CommandJoystick buttonBoard = new CommandJoystick(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -71,8 +72,13 @@ public class RobotContainer extends TimedRobot {
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
         SmartDashboard.putData("Restore Defaults", Commands.runOnce(networkTables::RestoreDefaults));
-
-        configureBindings();
+        
+        if (!RobotBase.isSimulation()){
+            configureBindings();
+        }
+        else{
+            configureSimBindings();
+        }
 
         // Warmup PathPlanner to avoid Java pauses
         FollowPathCommand.warmupCommand().schedule();
@@ -179,6 +185,38 @@ public class RobotContainer extends TimedRobot {
         // fixed
         drivetrain.registerTelemetry(logger::telemeterize);
 
+    }
+
+    public void configureSimBindings(){
+        drivetrain.setDefaultCommand(
+            drivetrain.applyRequest(() -> {
+                double exponentVelocity = networkTables.getDoubleValue(NetworkTables.ConstantId.ControllerVelocityCurveExponent);
+                double exponentRotation = networkTables.getDoubleValue(NetworkTables.ConstantId.ControllerRotationCurveExponent);
+                if (!simController.button(1).getAsBoolean()) {
+                    double fieldX = fieldXSlewFilter.calculate(
+                        networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed).in(MetersPerSecond) * ExponentialConvert(-controller.getRawAxis(0), exponentVelocity)
+                    );
+                    double fieldY = fieldYSlewFilter.calculate(
+                        networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed).in(MetersPerSecond) * ExponentialConvert(-controller.getRawAxis(1), exponentVelocity)
+                    );
+                    double fieldRotate = fieldRotateSlewFilter.calculate(
+                        networkTables.getAngularRateValue(NetworkTables.ConstantId.MaxAngularRate).in(RadiansPerSecond) * ExponentialConvert(-controller.getRawAxis(2), exponentRotation)
+                    );
+                    return fieldCentricDrive.withVelocityX(fieldX).withVelocityY(fieldY).withRotationalRate(fieldRotate);
+                } else {
+                    double robotX = robotXSlewFilter.calculate(
+                        networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed).in(MetersPerSecond) * ExponentialConvert(-controller.getRawAxis(0), exponentVelocity)
+                    );
+                    double robotY = robotYSlewFilter.calculate(
+                        networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed).in(MetersPerSecond) * ExponentialConvert(-controller.getRawAxis(1), exponentVelocity)
+                    );
+                    double robotRotate = robotRotateSlewFilter.calculate(
+                        networkTables.getAngularRateValue(NetworkTables.ConstantId.MaxAngularRate).in(RadiansPerSecond) * ExponentialConvert(-controller.getRawAxis(2), exponentRotation)
+                    );
+                    return robotCentricDrive.withVelocityX(robotX).withVelocityY(robotY).withRotationalRate(robotRotate);
+                }
+            })
+        );
     }
 
     public void teleopInit() {
