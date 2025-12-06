@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -29,6 +30,8 @@ import frc.robot.utils.simulation.MapleSimSwerveDrivetrain;
 import frc.robot.utils.simulation.SimSwerveConstants;
 
 import static edu.wpi.first.units.Units.Seconds;
+
+import org.littletonrobotics.junction.Logger;
 
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem  {
     private static final double kSimLoopPeriod = 0.005;
@@ -99,13 +102,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-        // TODO: Add Logger for recording MapleSim pose
         if (mapleSimSwerveDrivetrain != null) {
             Pose2d simPose = mapleSimSwerveDrivetrain.mapleSimDrive.getSimulatedDriveTrainPose();
             super.resetPose(simPose);
+            Logger.recordOutput("Drive/Pose", simPose);
+          } else {
+            Logger.recordOutput("Drive/Pose", getState().Pose);
           }
-    
-    }
+      
+          Logger.recordOutput("BatteryVoltage", RobotController.getBatteryVoltage());
+          Logger.recordOutput("Drive/TargetStates", getState().ModuleTargets);
+          Logger.recordOutput("Drive/MeasuredStates", getState().ModuleStates);
+          Logger.recordOutput("Drive/MeasuredSpeeds", getState().Speeds);
+        }
 
     
     private MapleSimSwerveDrivetrain mapleSimSwerveDrivetrain = null;
