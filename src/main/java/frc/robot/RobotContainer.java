@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
@@ -30,6 +31,7 @@ import frc.robot.Superstructure;
 import frc.robot.NetworkTables;
 
 
+import org.littletonrobotics.junction.Logger;
 public class RobotContainer extends TimedRobot {
     private final NetworkTables networkTables = new NetworkTables();
 
@@ -47,7 +49,7 @@ public class RobotContainer extends TimedRobot {
     private final Telemetry logger = new Telemetry(MAX_SPEED);
     
     private final CommandXboxController controller = new CommandXboxController(0);
-    private final CommandJoystick simController = new CommandJoystick(2);
+    private final Joystick simController = new Joystick(2);
     private final CommandJoystick buttonBoard = new CommandJoystick(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -193,7 +195,7 @@ public class RobotContainer extends TimedRobot {
             drivetrain.applyRequest(() -> {
                 double exponentVelocity = networkTables.getDoubleValue(NetworkTables.ConstantId.ControllerVelocityCurveExponent);
                 double exponentRotation = networkTables.getDoubleValue(NetworkTables.ConstantId.ControllerRotationCurveExponent);
-                if (!simController.button(1).getAsBoolean()) {
+                if (!simController.getRawButton(1)) {
                     double fieldX = fieldXSlewFilter.calculate(
                         networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed).in(MetersPerSecond) * ExponentialConvert(-simController.getRawAxis(0), exponentVelocity)
                     );
