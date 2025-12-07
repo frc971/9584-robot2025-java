@@ -139,6 +139,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /* Run simulation at a faster rate so PID gains behave more reasonably */
     m_simNotifier = new Notifier(mapleSimSwerveDrivetrain::update);
     m_simNotifier.startPeriodic(kSimLoopPeriod);
+
+    // Initialize simulation pose to inside the field
+    Pose2d initialSimPose = new Pose2d(16, 5, new Rotation2d(0));
+    mapleSimSwerveDrivetrain.mapleSimDrive.setSimulationWorldPose(initialSimPose);
     }
 
   @Override
