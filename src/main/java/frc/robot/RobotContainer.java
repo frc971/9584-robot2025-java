@@ -31,7 +31,6 @@ import frc.robot.Superstructure;
 import frc.robot.NetworkTables;
 
 
-import org.littletonrobotics.junction.Logger;
 public class RobotContainer extends TimedRobot {
     private final NetworkTables networkTables = new NetworkTables();
 
