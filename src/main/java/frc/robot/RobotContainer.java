@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
@@ -28,6 +29,7 @@ import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.Superstructure;
 import frc.robot.NetworkTables;
+
 
 public class RobotContainer extends TimedRobot {
     private final NetworkTables networkTables = new NetworkTables();
@@ -44,8 +46,9 @@ public class RobotContainer extends TimedRobot {
       TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
 
     private final Telemetry logger = new Telemetry(MAX_SPEED);
-
+    
     private final CommandXboxController controller = new CommandXboxController(0);
+    private final Joystick simController = new Joystick(2);
     private final CommandJoystick buttonBoard = new CommandJoystick(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -71,8 +74,13 @@ public class RobotContainer extends TimedRobot {
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
         SmartDashboard.putData("Restore Defaults", Commands.runOnce(networkTables::RestoreDefaults));
-
-        configureBindings();
+        
+        if (!RobotBase.isSimulation()){
+            configureBindings();
+        }
+        else{
+            configureSimBindings();
+        }
 
         // Warmup PathPlanner to avoid Java pauses
         FollowPathCommand.warmupCommand().schedule();
@@ -179,6 +187,42 @@ public class RobotContainer extends TimedRobot {
         // fixed
         drivetrain.registerTelemetry(logger::telemeterize);
 
+    }
+
+    public void configureSimBindings(){
+        drivetrain.setDefaultCommand(
+            drivetrain.applyRequest(() -> {
+                double exponentVelocity = networkTables.getDoubleValue(NetworkTables.ConstantId.ControllerVelocityCurveExponent);
+                double exponentRotation = networkTables.getDoubleValue(NetworkTables.ConstantId.ControllerRotationCurveExponent);
+                if (!simController.getRawButton(1)) {
+                    double fieldX = fieldXSlewFilter.calculate(
+                        networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed).in(MetersPerSecond) * ExponentialConvert(-simController.getRawAxis(0), exponentVelocity)
+                    );
+                    double fieldY = fieldYSlewFilter.calculate(
+                        networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed).in(MetersPerSecond) * ExponentialConvert(-simController.getRawAxis(1), exponentVelocity)
+                    );
+                    double fieldRotate = fieldRotateSlewFilter.calculate(
+                        networkTables.getAngularRateValue(NetworkTables.ConstantId.MaxAngularRate).in(RadiansPerSecond) * ExponentialConvert(-simController.getRawAxis(2), exponentRotation)
+                    );
+                    return fieldCentricDrive.withVelocityX(fieldX).withVelocityY(fieldY).withRotationalRate(fieldRotate);
+                } else {
+                    double robotX = robotXSlewFilter.calculate(
+                        networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed).in(MetersPerSecond) * ExponentialConvert(-simController.getRawAxis(0), exponentVelocity)
+                    );
+                    double robotY = robotYSlewFilter.calculate(
+                        networkTables.getVelocityValue(NetworkTables.ConstantId.MaxSpeed).in(MetersPerSecond) * ExponentialConvert(-simController.getRawAxis(1), exponentVelocity)
+                    );
+                    double robotRotate = robotRotateSlewFilter.calculate(
+                        networkTables.getAngularRateValue(NetworkTables.ConstantId.MaxAngularRate).in(RadiansPerSecond) * ExponentialConvert(-simController.getRawAxis(2), exponentRotation)
+                    );
+                    return robotCentricDrive.withVelocityX(robotX).withVelocityY(robotY).withRotationalRate(robotRotate);
+                }
+            })
+        );
+
+        // Register telemetry with explicit type
+        // fixed
+        drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public void teleopInit() {
