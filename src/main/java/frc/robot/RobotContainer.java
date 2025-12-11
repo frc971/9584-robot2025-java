@@ -238,6 +238,11 @@ public class RobotContainer extends TimedRobot {
     }
 
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        if (RobotBase.isReal()){
+            return autoChooser.getSelected(); // Selected auto on driver station (for real robot)
+        }
+        else{
+            return AutoBuilder.buildAuto("MobilityAuto"); // Change the autoName to the desired auto in pathplanner (for sim)
+        }
     }
 }
