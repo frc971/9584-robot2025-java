@@ -11,15 +11,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.LimelightHelpers.PoseEstimate;
 
-private static final double kLowBatteryVoltage = 11.8;
-private static final double kLowBatteryDisabledTime = 1.5;
-private static final int kLowBatteryMinCycles = 10;
-
-private int lowBatteryCycleCount = 0;
-private final Timer disabledTimer = new Timer();
-private boolean lowBatteryAlert = false;
-
 public class Robot extends TimedRobot {
+
+    private static final double kLowBatteryVoltage = 11.8;
+    private static final double kLowBatteryDisabledTime = 1.5;
+    private static final int kLowBatteryMinCycles = 10;
+
+    private int lowBatteryCycleCount = 0;
+    private final Timer disabledTimer = new Timer();
+    private boolean lowBatteryAlert = false;
+
+
     private Command m_autonomousCommand;
 
     private final RobotContainer m_container = new RobotContainer();
