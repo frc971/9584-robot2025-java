@@ -14,6 +14,16 @@ import frc.robot.subsystems.Limelights.LimelightHelpers.PoseEstimate;
 import frc.robot.subsystems.Led.LEDSubsystem;
 
 public class Robot extends TimedRobot {
+
+    private static final double kLowBatteryVoltage = 11.8;
+    private static final double kLowBatteryDisabledTime = 1.5;
+    private static final int kLowBatteryMinCycles = 10;
+
+    private int lowBatteryCycleCount = 0;
+    private final Timer disabledTimer = new Timer();
+    private boolean lowBatteryAlert = false;
+
+
     private Command m_autonomousCommand;
 
     private final RobotContainer m_container = new RobotContainer();
@@ -127,6 +137,8 @@ public class Robot extends TimedRobot {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
 
+        disabledTimer.start();
+
     }
 
     @Override
@@ -167,6 +179,20 @@ public class Robot extends TimedRobot {
             }
             */
         }
+        lowBatteryCycleCount++;
+
+        if(DriverStation.isEnabled()){
+            disabledTimer.reset();
+        }
+        double batteryVoltage = RobotController.getBatteryVoltage();
+
+        if(batteryVoltage<= kLowBatteryVoltage && disabledTimer.hasElapsed(kLowBatteryDisabledTime) && lowBatteryCycleCount >= kLowBatteryMinCycles){
+            lowBatteryAlert = true;
+        } else {
+            lowBatteryAlert = false;
+        }
+
+        SmartDashboard.putBoolean("LowBattery", lowBatteryAlert);
     }
 
     @Override
