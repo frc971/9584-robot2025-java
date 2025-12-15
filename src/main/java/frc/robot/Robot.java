@@ -14,10 +14,8 @@ import frc.robot.LimelightHelpers.PoseEstimate;
 public class Robot extends TimedRobot {
 
     private static final double kLowBatteryVoltage = 11.8;
-    private static final double kLowBatteryDisabledTime = 1.5;
-    private static final int kLowBatteryMinCycles = 10;
+    private static final double kLowBatteryDisabledTime = 1.5; //seconds
 
-    private int lowBatteryCycleCount = 0;
     private final Timer disabledTimer = new Timer();
     private boolean lowBatteryAlert = false;
 
@@ -176,14 +174,13 @@ public class Robot extends TimedRobot {
             }
             */
         }
-        lowBatteryCycleCount++;
 
         if(DriverStation.isEnabled()){
             disabledTimer.reset();
         }
         double batteryVoltage = RobotController.getBatteryVoltage();
 
-        if(batteryVoltage<= kLowBatteryVoltage && disabledTimer.hasElapsed(kLowBatteryDisabledTime) && lowBatteryCycleCount >= kLowBatteryMinCycles){
+        if(batteryVoltage<= kLowBatteryVoltage && disabledTimer.hasElapsed(kLowBatteryDisabledTime)){
             lowBatteryAlert = true;
         } else {
             lowBatteryAlert = false;
