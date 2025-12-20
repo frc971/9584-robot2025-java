@@ -33,6 +33,7 @@ public class AutoCommands {
     public Command EjectAlgae() {
         return Commands.sequence(
             // Implement algae eject
+            superstructure.AlgaeEjectPressed(),
             Commands.waitSeconds(networkTables.getTimeValue(NetworkTables.ConstantId.AutoEjectAlgaeWait).in(edu.wpi.first.units.Units.Seconds)),
             superstructure.AlgaeEjectReleased()
         );
