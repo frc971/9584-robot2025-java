@@ -15,6 +15,8 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.NetworkTables;
 import frc.robot.NetworkTables.ConstantId;
 
+import edu.wpi.first.wpilibj.RobotBase;
+
 public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase {
     private final DigitalInput m_coralBeamBreak = new DigitalInput(0);
     private final NetworkTables m_networkTables;
@@ -100,7 +102,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command AutoCoral() {
         return Commands.sequence(
             Commands.runOnce(() -> {
-                System.out.println("============ CoralEjectPressed\nmoving rollers forward//\n");
+                System.out.println("============ CoralEjectPressed\nmoving rollers forward\n");
                 armMotor.set(TalonSRXControlMode.Position,
                     m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
                 );
@@ -124,6 +126,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
             }),
             Commands.waitSeconds(0.5),
             Commands.runOnce(() -> {
+                System.out.println("Reset arm and roller");
                 rollerMotor.set(VictorSPXControlMode.PercentOutput, 0);
                 armMotor.set(ControlMode.Position, 
                     m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
@@ -137,8 +140,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
             Commands.runOnce(() -> {
                 System.out.println("============ AlgaeIntakePressed");
                 System.out.println("lowering arm");
-                System.out.println("Position1: " + armMotor.getSelectedSensorPosition(0));
-                
+                if (RobotBase.isReal()) System.out.println("Position1: " + armMotor.getSelectedSensorPosition(0));
                 armMotor.set(ControlMode.Position,
                     m_networkTables.getDoubleValue(ConstantId.ArmIntakePosition)
                 );
@@ -148,7 +150,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
             ),
             Commands.runOnce(() -> {
                 System.out.println("stopping the lowering of arm");
-                System.out.println("Position2: " + armMotor.getSelectedSensorPosition());
+                if (RobotBase.isReal()) System.out.println("Position2: " + armMotor.getSelectedSensorPosition());
                 
                 rollerMotor.set(VictorSPXControlMode.PercentOutput,
                     m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeIntakeVelocity)
@@ -161,7 +163,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
         return Commands.sequence(
             Commands.runOnce(() -> {
                 System.out.println("============ AlgaeIntakeReleased");
-                System.out.println("Position3:" + armMotor.getSelectedSensorPosition());
+                if (RobotBase.isReal()) System.out.println("Position3:" + armMotor.getSelectedSensorPosition());
 
                 armMotor.set(ControlMode.Position,
                     m_networkTables.getDoubleValue(ConstantId.ArmHoldPosition)
@@ -172,7 +174,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
             ),
             Commands.runOnce(() -> {
                 System.out.println("============ AlgaeIntakeReleased");
-                System.out.println("Position4:" + armMotor.getSelectedSensorPosition(0));
+                if (RobotBase.isReal()) System.out.println("Position4:" + armMotor.getSelectedSensorPosition(0));
                 rollerMotor.set(VictorSPXControlMode.PercentOutput,
                     m_networkTables.getDoubleValue(ConstantId.RollerMovementHoldVelocity));
             })
@@ -222,6 +224,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command AlgaeEjectPressed() {
         return Commands.runOnce(() -> {
             System.out.println("============= AlgaeEjectPressed");
+            System.out.println("Set rollers to algae eject velocity");
             rollerMotor.set(VictorSPXControlMode.PercentOutput,
                 m_networkTables.getDoubleValue(ConstantId.RollerMovementAlgaeEjectVelocity)
             );
@@ -231,6 +234,7 @@ public class Superstructure extends edu.wpi.first.wpilibj2.command.SubsystemBase
     public Command AlgaeEjectReleased() {
         return Commands.runOnce(() -> {
             System.out.println("========== AlgaeEjectReleased");
+            System.out.println("Reset rollers");
             armMotor.set(TalonSRXControlMode.Position,
                 m_networkTables.getDoubleValue(ConstantId.ArmDefaultPosition)
             );

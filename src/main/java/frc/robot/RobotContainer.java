@@ -70,6 +70,8 @@ public class RobotContainer extends TimedRobot {
 
     public RobotContainer() {
         NamedCommands.registerCommand("Eject Coral", superstructure.AutoCoral());
+        NamedCommands.registerCommand("Intake Algae", autoCommands.IntakeAlgae());
+        NamedCommands.registerCommand("Eject Algae", autoCommands.EjectAlgae());
 
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
@@ -238,6 +240,11 @@ public class RobotContainer extends TimedRobot {
     }
 
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        if (RobotBase.isReal()){
+            return autoChooser.getSelected(); // Selected auto on driver station (for real robot)
+        }
+        else{
+            return AutoBuilder.buildAuto("RightAuto (Coral, Algae x2)"); // Change the autoName to the desired auto in pathplanner (for sim)
+        }
     }
 }
