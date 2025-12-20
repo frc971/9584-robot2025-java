@@ -16,7 +16,7 @@ public class Robot extends TimedRobot {
     private static final double kLowBatteryVoltage = 11.8;
     private static final double kLowBatteryDisabledTime = 1.5; //seconds
 
-    private final Timer disabledTimer = new Timer();
+    private final Timer batteryTimer = new Timer();
     private boolean lowBatteryAlert = false;
 
 
@@ -176,11 +176,11 @@ public class Robot extends TimedRobot {
         }
 
         if(DriverStation.isEnabled()){
-            disabledTimer.reset();
+            batteryTimer.reset();
         }
         double batteryVoltage = RobotController.getBatteryVoltage();
 
-        if(batteryVoltage<= kLowBatteryVoltage && disabledTimer.hasElapsed(kLowBatteryDisabledTime)){
+        if(batteryVoltage<= kLowBatteryVoltage && batteryTimer.hasElapsed(kLowBatteryDisabledTime)){
             lowBatteryAlert = true;
         } else {
             lowBatteryAlert = false;
