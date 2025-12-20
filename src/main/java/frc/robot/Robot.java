@@ -132,7 +132,7 @@ public class Robot extends TimedRobot {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
 
-        disabledTimer.start();
+        batteryTimer.start();
 
     }
 
