@@ -240,11 +240,13 @@ public class RobotContainer extends TimedRobot {
     }
 
     public Command getAutonomousCommand() {
-        if (RobotBase.isReal()){
-            return autoChooser.getSelected(); // Selected auto on driver station (for real robot)
+        Command selectedAuto = autoChooser.getSelected();
+
+        if (selectedAuto != null) {
+            return selectedAuto; // Respect chooser selection on both real robot and sim
         }
-        else{
-            return AutoBuilder.buildAuto("RightAuto (Coral, Algae x2)"); // Change the autoName to the desired auto in pathplanner (for sim)
-        }
+
+        DriverStation.reportWarning("No autonomous selected; running no-op auto.", false);
+        return Commands.none();
     }
 }
