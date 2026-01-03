@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
     
     private void updateLimelightTelemetry() {
         for (String limelightName : Constants.LimelightConstants.limelightNames) {
-            boolean hasTarget = LimelightHelpers.hasTarget(limelightName);
+            boolean hasTarget = LimelightHelpers.getTV(limelightName);
             SmartDashboard.putBoolean(limelightName + "/HasTarget", hasTarget);
             
             if (hasTarget) {
@@ -69,7 +69,7 @@ public class Robot extends TimedRobot {
         var omega = driveState.Speeds.omegaRadiansPerSecond;
     
         for (String limelightName : Constants.LimelightConstants.limelightNames) {
-            LimelightHelpers.setRobotOrientation(
+            LimelightHelpers.SetRobotOrientation(
                 limelightName, 
                 heading, 
                 omega * 180.0 / Math.PI,
