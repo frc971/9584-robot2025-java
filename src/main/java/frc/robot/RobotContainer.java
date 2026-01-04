@@ -23,12 +23,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.VisionAlign;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AutoCommands.AutoCommands;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.Superstructure;
-import frc.robot.NetworkTables;
+import frc.robot.subsystems.VisionSubsystem;
 
 
 public class RobotContainer extends TimedRobot {
@@ -52,6 +52,8 @@ public class RobotContainer extends TimedRobot {
     private final CommandJoystick buttonBoard = new CommandJoystick(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    public final VisionSubsystem visionSubsystem = new VisionSubsystem();
 
     public final Climber climber = new Climber(networkTables);
     private final Superstructure superstructure = new Superstructure(networkTables, drivetrain);
@@ -129,6 +131,13 @@ public class RobotContainer extends TimedRobot {
                 }
             })
         );
+
+        controller.x().whileTrue(new VisionAlign(
+                drivetrain,
+                visionSubsystem,
+                () -> -controller.getLeftY() * MAX_SPEED,
+                () -> -controller.getLeftX() * MAX_SPEED
+        ));
 
         new Trigger(controller.a().whileTrue(drivetrain.applyRequest(() -> brake)));
         new Trigger(controller.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX())))));
