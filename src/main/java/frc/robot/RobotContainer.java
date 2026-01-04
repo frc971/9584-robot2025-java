@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.VisionAlign;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AutoCommands.AutoCommands;
 import frc.robot.subsystems.Climber.Climber;
@@ -130,6 +131,13 @@ public class RobotContainer extends TimedRobot {
                 }
             })
         );
+
+        controller.x().whileTrue(new VisionAlign(
+                drivetrain,
+                visionSubsystem,
+                () -> -controller.getLeftY() * MAX_SPEED,
+                () -> -controller.getLeftX() * MAX_SPEED
+        ));
 
         new Trigger(controller.a().whileTrue(drivetrain.applyRequest(() -> brake)));
         new Trigger(controller.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX())))));
