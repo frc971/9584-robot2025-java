@@ -27,8 +27,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AutoCommands.AutoCommands;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.Superstructure;
-import frc.robot.NetworkTables;
+import frc.robot.subsystems.VisionSubsystem;
 
 
 public class RobotContainer extends TimedRobot {
@@ -52,6 +51,8 @@ public class RobotContainer extends TimedRobot {
     private final CommandJoystick buttonBoard = new CommandJoystick(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    public final VisionSubsystem visionSubsystem = new VisionSubsystem();
 
     public final Climber climber = new Climber(networkTables);
     private final Superstructure superstructure = new Superstructure(networkTables, drivetrain);

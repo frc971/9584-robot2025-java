@@ -2,9 +2,9 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.swerve.SwerveDrivetrain;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -163,5 +163,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     @FunctionalInterface
     public interface DeviceConstructor {
         BaseStatusSignal create(int deviceId, String canbus);
+    }
+
+    /**
+     * Injects vision data into the CTRE internal pose estimator.
+     * * @param pose The robot's pose as seen by the Limelight.
+     * @param timestamp The timestamp of the measurement in seconds.
+     * @param stdDevs The trust level (Standard Deviations) for this measurement.
+     */
+    public void addVisionMeasurement(Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs) {
+        // super.addVisionMeasurement is the correct Phoenix 6 API
+        super.addVisionMeasurement(pose, timestamp, stdDevs);
     }
 }
