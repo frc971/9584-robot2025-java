@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     # This grabs the WPILib docker container
     container:
-      image: wpilib/roborio-cross-ubuntu:2025-22.04
+      image: wpilib/roborio-cross-ubuntu:2026-22.04
       options: --dns=1.1.1.1 --dns=8.8.8.8
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -28,7 +28,7 @@ jobs:
     - name: Setup
       run: |
         chmod +x gradlew          # gradlew shell file run permission setup
-        git config --global --add safe.directory $GITHUB_WORKSPACE/y2025  # git safe directory setup
+        git config --global --add safe.directory $GITHUB_WORKSPACE        # git safe directory setup
       
     #Clean cache
     - name: Clean Cache
