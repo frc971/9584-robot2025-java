@@ -28,7 +28,7 @@ jobs:
     - name: Setup
       run: |
         chmod +x gradlew          # gradlew shell file run permission setup
-        git config --global --add safe.directory $GITHUB_WORKSPACE/y2025  # git safe directory setup
+        git config --global --add safe.directory $GITHUB_WORKSPACE        # git safe directory setup
       
     #Clean cache
     - name: Clean Cache
